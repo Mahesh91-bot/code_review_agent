@@ -42,14 +42,21 @@ async function hindsightRequest(path, body) {
  * Save one memory item for a team.
  */
 async function storeMemory({ teamName, content, memoryType, metadata = {} }) {
+  const memoryContentString = content;
+  const metadataObject = {
+    teamName,
+    memoryType,
+    createdAt: new Date().toISOString(),
+    ...metadata
+  };
+
   return hindsightRequest("/memories", {
-    content,
-    metadata: {
-      teamName,
-      memoryType,
-      createdAt: new Date().toISOString(),
-      ...metadata
-    }
+    items: [
+      {
+        content: memoryContentString,
+        metadata: metadataObject
+      }
+    ]
   });
 }
 

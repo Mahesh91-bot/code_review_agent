@@ -1,6 +1,6 @@
 const GROQ_CHAT_COMPLETIONS_URL = "https://api.groq.com/openai/v1/chat/completions";
-const PRIMARY_MODEL_NAME = "llama3-70b-8192";
-const FALLBACK_MODEL_NAME = "llama-3.1-70b-versatile";
+const PRIMARY_MODEL_NAME = "qwen/qwen3-32b";
+const FALLBACK_MODEL_NAME = "openai/gpt-oss-120b";
 
 /**
  * Convert raw memory search results into readable prompt text.
