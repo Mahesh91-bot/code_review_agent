@@ -27,18 +27,19 @@ export default function LandingHindsight() {
               </p>
             </div>
             <div className="flex flex-col gap-4 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => console.log("TODO: Implement [View Hindsight GitHub]")}
+              <a
+                href="https://github.com/vectorize-io/hindsight"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="glass-panel ghost-border flex items-center justify-center gap-2 rounded-sm px-6 py-3 font-headline text-sm font-bold text-on-surface transition-all hover:bg-surface-variant/60"
               >
                 <span className="material-symbols-outlined text-xl">code</span>
                 <span>View Hindsight GitHub</span>
-              </button>
+              </a>
               <a
                 href="https://hindsight.vectorize.io"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="glass-panel ghost-border flex items-center justify-center gap-2 rounded-sm px-6 py-3 font-headline text-sm font-bold text-on-surface transition-all hover:bg-surface-variant/60"
               >
                 <span className="material-symbols-outlined text-xl">language</span>

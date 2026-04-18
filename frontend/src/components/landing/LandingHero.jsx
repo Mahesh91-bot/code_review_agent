@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 export default function LandingHero() {
   return (
     <section className="relative flex min-h-[921px] items-center justify-center overflow-hidden bg-surface-container-lowest bg-grid-pattern pb-32 pt-20">
@@ -23,20 +21,23 @@ export default function LandingHero() {
             architectural intent.
           </p>
           <div className="flex w-full flex-col items-center gap-6 sm:w-auto sm:flex-row">
-            <Link
-              to="/dashboard"
+            <a
+              href="https://youtube.com/watch?v=YOUR_VIDEO_ID"
+              target="_blank"
+              rel="noopener noreferrer"
               className="gradient-cta w-full rounded-sm px-10 py-4 text-center font-headline text-lg font-bold text-on-primary-fixed shadow-[0_0_20px_rgba(0,255,65,0.3)] transition-all hover:brightness-110 sm:w-auto"
             >
-              Initialize Engine
-            </Link>
-            <button
-              type="button"
-              onClick={() => console.log("TODO: Implement [View Docs]")}
+              Initialize Demo
+            </a>
+            <a
+              href="https://github.com/Mahesh91-bot/code_review_agent"
+              target="_blank"
+              rel="noopener noreferrer"
               className="glass-panel ghost-border flex w-full items-center justify-center gap-2 rounded-sm px-8 py-4 font-headline text-lg font-bold text-on-surface transition-all hover:bg-surface-variant/60 sm:w-auto"
             >
               <span className="material-symbols-outlined text-xl">terminal</span>
               View Docs
-            </button>
+            </a>
           </div>
         </div>
         <div className="mt-32 hidden h-full flex-col justify-end lg:col-span-4 lg:flex">

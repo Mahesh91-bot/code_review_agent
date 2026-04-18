@@ -36,13 +36,14 @@ export default function LandingNav() {
           >
             Hindsight
           </a>
-          <button
-            type="button"
-            onClick={() => console.log("TODO: Implement [Docs]")}
+          <a
+            href="https://github.com/Mahesh91-bot/code_review_agent"
+            target="_blank"
+            rel="noopener noreferrer"
             className="scale-95 font-['Inter'] text-xs font-bold uppercase tracking-tight text-[#b9ccb2] transition-transform hover:text-[#00FF41] active:scale-100"
           >
             Docs
-          </button>
+          </a>
         </div>
         <div className="flex items-center space-x-4">
           <Link
@@ -51,13 +52,12 @@ export default function LandingNav() {
           >
             Login
           </Link>
-          <button
-            type="button"
-            onClick={() => console.log("TODO: Implement [Register / Sign Up]")}
+          <Link
+            to="/login?mode=register"
             className="scale-95 rounded bg-primary-container px-6 py-2 font-['Inter'] text-xs font-bold uppercase tracking-tight text-on-primary-fixed transition-transform hover:opacity-90 active:scale-100"
           >
             Register
-          </button>
+          </Link>
         </div>
       </div>
       <div className="absolute bottom-0 h-px w-full bg-[#0e0e10]/50" />

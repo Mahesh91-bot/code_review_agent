@@ -1,7 +1,66 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+
+const STORAGE_KEY = "sage_auth_session";
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const modeParam = searchParams.get("mode");
+  const isRegister = modeParam === "register";
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formError, setFormError] = useState("");
+
+  const subtitle = useMemo(
+    () => (isRegister ? "Create your access credentials" : "Authenticate to continue"),
+    [isRegister]
+  );
+
+  const title = useMemo(() => (isRegister ? "Register" : "Access Portal"), [isRegister]);
+
+  const persistAndRedirect = () => {
+    const payload = {
+      email,
+      mode: isRegister ? "register" : "login",
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    navigate("/dashboard");
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setFormError("");
+
+    if (!email.trim()) {
+      setFormError("Please enter your email.");
+      return;
+    }
+    if (!password) {
+      setFormError("Please enter your password.");
+      return;
+    }
+
+    if (isRegister) {
+      if (password !== confirmPassword) {
+        setFormError("Passwords do not match.");
+        return;
+      }
+    }
+
+    persistAndRedirect();
+  };
+
+  const setRegisterMode = (register) => {
+    setFormError("");
+    if (!register) {
+      setConfirmPassword("");
+    }
+    setSearchParams(register ? { mode: "register" } : {}, { replace: true });
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-surface font-body text-on-surface">
@@ -46,10 +105,34 @@ export default function AuthPage() {
                   SAGE
                 </h1>
               </div>
+              <div className="mb-6 flex gap-2 rounded-sm bg-surface-container-highest/50 p-1">
+                <button
+                  type="button"
+                  onClick={() => setRegisterMode(false)}
+                  className={`flex-1 rounded-sm py-2 font-label text-xs font-bold uppercase tracking-wider transition-colors ${
+                    !isRegister
+                      ? "bg-primary-container text-on-primary-fixed"
+                      : "text-on-surface-variant hover:text-on-surface"
+                  }`}
+                >
+                  Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRegisterMode(true)}
+                  className={`flex-1 rounded-sm py-2 font-label text-xs font-bold uppercase tracking-wider transition-colors ${
+                    isRegister
+                      ? "bg-primary-container text-on-primary-fixed"
+                      : "text-on-surface-variant hover:text-on-surface"
+                  }`}
+                >
+                  Register
+                </button>
+              </div>
               <div className="mb-10 text-center md:text-left">
-                <h2 className="font-headline mb-2 text-3xl font-bold tracking-tight">Access Portal</h2>
+                <h2 className="font-headline mb-2 text-3xl font-bold tracking-tight">{title}</h2>
                 <p className="font-label text-sm uppercase tracking-widest text-on-surface-variant">
-                  Authenticate to continue
+                  {subtitle}
                 </p>
               </div>
               <div className="mb-8 space-y-4">
@@ -85,13 +168,7 @@ export default function AuthPage() {
                 </span>
                 <div className="flex-grow border-t border-outline-variant/30" />
               </div>
-              <form
-                className="space-y-6"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  navigate("/dashboard");
-                }}
-              >
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div>
                   <label
                     className="mb-2 block font-label text-sm uppercase tracking-[0.1em] text-on-surface-variant"
@@ -104,6 +181,9 @@ export default function AuthPage() {
                     id="email"
                     placeholder="Enter your email"
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
                   />
                 </div>
                 <div>
@@ -114,38 +194,92 @@ export default function AuthPage() {
                     >
                       Password
                     </label>
-                    <button
-                      type="button"
-                      onClick={() => console.log("TODO: Implement [Password Reset]")}
-                      className="font-label text-xs uppercase tracking-wider text-primary-container transition-colors hover:text-primary-fixed-dim"
-                    >
-                      Reset
-                    </button>
+                    {!isRegister && (
+                      <button
+                        type="button"
+                        onClick={() => console.log("TODO: Implement [Password Reset]")}
+                        className="font-label text-xs uppercase tracking-wider text-primary-container transition-colors hover:text-primary-fixed-dim"
+                      >
+                        Reset
+                      </button>
+                    )}
                   </div>
                   <input
                     className="w-full rounded-sm border-none bg-surface-container-highest px-4 py-3 font-body text-on-surface placeholder:text-on-surface-variant/50 transition-all focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] focus:ring-1 focus:ring-primary"
                     id="password"
                     placeholder="Enter your password"
                     type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete={isRegister ? "new-password" : "current-password"}
                   />
+                  <p className="mt-2 font-label text-[11px] leading-snug text-on-surface-variant/90">
+                    Password strength: Must be at least 8 characters with a symbol.
+                  </p>
                 </div>
+                {isRegister && (
+                  <div>
+                    <label
+                      className="mb-2 block font-label text-sm uppercase tracking-[0.1em] text-on-surface-variant"
+                      htmlFor="confirmPassword"
+                    >
+                      Confirm Password
+                    </label>
+                    <input
+                      className="w-full rounded-sm border-none bg-surface-container-highest px-4 py-3 font-body text-on-surface placeholder:text-on-surface-variant/50 transition-all focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] focus:ring-1 focus:ring-primary"
+                      id="confirmPassword"
+                      placeholder="Re-enter your password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      autoComplete="new-password"
+                    />
+                  </div>
+                )}
+                {formError && (
+                  <p className="font-body text-sm text-error" role="alert">
+                    {formError}
+                  </p>
+                )}
                 <button
                   className="mt-8 w-full rounded-none bg-gradient-to-br from-primary-container to-primary-fixed-dim py-4 font-headline text-sm font-bold uppercase tracking-wider text-on-primary-fixed shadow-[0px_10px_20px_rgba(0,255,65,0.1)] transition-opacity hover:opacity-90"
                   type="submit"
                 >
-                  Authenticate
+                  {isRegister ? "Create account" : "Authenticate"}
                 </button>
               </form>
               <div className="mt-8 text-center">
                 <p className="font-body text-sm text-on-surface-variant">
-                  No access?{" "}
-                  <button
-                    type="button"
-                    onClick={() => console.log("TODO: Implement [Request provisioning]")}
-                    className="ml-1 border-b border-primary-container/30 pb-0.5 text-primary-container transition-colors hover:border-primary-container hover:text-primary-fixed-dim"
-                  >
-                    Request provisioning
-                  </button>
+                  {isRegister ? "Already have access? " : "No access? "}
+                  {isRegister ? (
+                    <button
+                      type="button"
+                      onClick={() => setRegisterMode(false)}
+                      className="ml-1 border-b border-primary-container/30 pb-0.5 text-primary-container transition-colors hover:border-primary-container hover:text-primary-fixed-dim"
+                    >
+                      Sign in
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setRegisterMode(true)}
+                      className="ml-1 border-b border-primary-container/30 pb-0.5 text-primary-container transition-colors hover:border-primary-container hover:text-primary-fixed-dim"
+                    >
+                      Register
+                    </button>
+                  )}
+                  {!isRegister && (
+                    <>
+                      {" · "}
+                      <button
+                        type="button"
+                        onClick={() => console.log("TODO: Implement [Request provisioning]")}
+                        className="border-b border-primary-container/30 pb-0.5 text-primary-container transition-colors hover:border-primary-container hover:text-primary-fixed-dim"
+                      >
+                        Request provisioning
+                      </button>
+                    </>
+                  )}
                 </p>
               </div>
               <p className="mt-6 text-center font-label text-xs text-on-surface-variant">

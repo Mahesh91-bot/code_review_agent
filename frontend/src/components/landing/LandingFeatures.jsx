@@ -45,7 +45,7 @@ export default function LandingFeatures() {
           ].map((card) => (
             <div
               key={card.title}
-              className="glass-panel ghost-border rounded-xl p-8 transition-colors hover:bg-surface-variant/40"
+              className="glass-panel ghost-border rounded-xl p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:bg-surface-variant/40 hover:shadow-2xl hover:shadow-primary-container/20"
             >
               <span className="material-symbols-outlined mb-6 text-4xl text-primary-container">
                 {card.icon}

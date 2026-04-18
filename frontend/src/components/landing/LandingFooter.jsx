@@ -15,8 +15,9 @@ export default function LandingFooter() {
             </button>
           ))}
         </div>
-        <div className="font-['Space_Grotesk'] mt-8 text-center text-[10px] uppercase tracking-widest text-on-surface-variant opacity-50 md:col-span-2 md:text-left">
-          © 2024 SAGE KINETIC LEDGER. ALL RIGHTS RESERVED.
+        <div className="font-['Space_Grotesk'] mt-8 space-y-1 text-center text-[10px] uppercase tracking-widest text-on-surface-variant opacity-50 md:col-span-2 md:text-left">
+          <div>© 2026 SAGE code reviewing agent</div>
+          <div>MIT licence open source</div>
         </div>
       </div>
     </footer>
