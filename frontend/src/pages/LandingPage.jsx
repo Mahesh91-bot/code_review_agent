@@ -10,7 +10,7 @@ import LandingFooter from "../components/landing/LandingFooter";
 
 export default function LandingPage() {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-fixed">
+    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-zinc-100 text-zinc-900 selection:bg-emerald-200 selection:text-zinc-900 dark:bg-surface dark:text-on-surface dark:selection:bg-primary-container dark:selection:text-on-primary-fixed">
       <LandingNav />
       <main className="flex-grow">
         <LandingHero />

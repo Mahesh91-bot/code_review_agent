@@ -1,6 +1,6 @@
 export default function LandingPersona() {
   return (
-    <section className="relative border-y border-outline-variant/10 bg-surface-container-lowest py-32">
+    <section className="relative border-y border-zinc-200 bg-zinc-50 py-32 dark:border-outline-variant/10 dark:bg-surface-container-lowest">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-16 px-8 lg:grid-cols-2">
         <div className="relative">
           <img
@@ -10,34 +10,38 @@ export default function LandingPersona() {
           />
           <div className="absolute inset-0 rounded-xl bg-primary-container/10 mix-blend-overlay" />
           <div className="glass-panel ghost-border glow-shadow absolute -bottom-8 -left-8 rounded-lg p-6">
-            <div className="font-label mb-1 text-xs text-primary-container">PERSONA ACTIVE</div>
-            <div className="font-display text-xl font-bold">The Veteran Senior</div>
+            <div className="font-label mb-1 text-xs text-emerald-600 dark:text-primary-container">
+              PERSONA ACTIVE
+            </div>
+            <div className="font-display text-xl font-bold text-zinc-900 dark:text-on-surface">
+              The Veteran Senior
+            </div>
           </div>
         </div>
         <div>
-          <h2 className="font-display mb-8 text-5xl font-black leading-tight text-on-surface">
+          <h2 className="font-display mb-8 text-5xl font-black leading-tight text-zinc-900 dark:text-on-surface">
             Not just a linter.
             <br />A partner.
           </h2>
-          <p className="mb-8 font-body text-xl text-on-surface-variant">
+          <p className="mb-8 font-body text-xl text-zinc-600 dark:text-on-surface-variant">
             We trained SAGE on the communication patterns of top staff engineers. It
             doesn&apos;t just point out errors; it explains the architectural reasoning
             behind them, mentoring your team as they code.
           </p>
           <ul className="space-y-6">
             <li className="flex items-start">
-              <span className="material-symbols-outlined mr-4 mt-1 text-primary-container">
+              <span className="material-symbols-outlined mr-4 mt-1 text-emerald-600 dark:text-primary-container">
                 check_circle
               </span>
-              <span className="text-lg text-on-surface">
+              <span className="text-lg text-zinc-800 dark:text-on-surface">
                 Adapts to your internal jargon and naming conventions.
               </span>
             </li>
             <li className="flex items-start">
-              <span className="material-symbols-outlined mr-4 mt-1 text-primary-container">
+              <span className="material-symbols-outlined mr-4 mt-1 text-emerald-600 dark:text-primary-container">
                 check_circle
               </span>
-              <span className="text-lg text-on-surface">
+              <span className="text-lg text-zinc-800 dark:text-on-surface">
                 Links comments directly to internal documentation.
               </span>
             </li>

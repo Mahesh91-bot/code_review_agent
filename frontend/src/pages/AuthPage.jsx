@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 const STORAGE_KEY = "sage_auth_session";
+const TEAM_NAME_KEY = "sage_team_name";
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -62,8 +63,21 @@ export default function AuthPage() {
     setSearchParams(register ? { mode: "register" } : {}, { replace: true });
   };
 
+  const handleTestLogin = () => {
+    localStorage.setItem(TEAM_NAME_KEY, "Team Alpha");
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        email: "demo@team-alpha.local",
+        mode: "test_login",
+        savedAt: new Date().toISOString()
+      })
+    );
+    navigate("/dashboard");
+  };
+
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-surface font-body text-on-surface">
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-zinc-100 font-body text-zinc-900 dark:bg-surface dark:text-on-surface">
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-5"
         style={{
@@ -74,9 +88,9 @@ export default function AuthPage() {
       />
       <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-container/5 blur-[120px]" />
       <main className="relative z-10 flex flex-grow items-center justify-center p-6">
-        <div className="relative grid w-full max-w-5xl grid-cols-1 overflow-hidden rounded-xl bg-surface-container-low shadow-[0px_20px_40px_rgba(0,255,65,0.04)] md:grid-cols-2">
-          <div className="pointer-events-none absolute inset-0 rounded-xl border border-outline-variant/15" />
-          <div className="relative hidden flex-col justify-between overflow-hidden bg-surface-container-lowest p-12 md:flex">
+        <div className="relative grid w-full max-w-5xl grid-cols-1 overflow-hidden rounded-xl bg-white shadow-xl shadow-zinc-200/50 md:grid-cols-2 dark:bg-surface-container-low dark:shadow-[0px_20px_40px_rgba(0,255,65,0.04)]">
+          <div className="pointer-events-none absolute inset-0 rounded-xl border border-zinc-200/80 dark:border-outline-variant/15" />
+          <div className="relative hidden flex-col justify-between overflow-hidden bg-zinc-200/80 p-12 dark:bg-surface-container-lowest md:flex">
             <div className="absolute inset-0 opacity-20">
               <img
                 alt="Abstract visualization of server racks and data flow"
@@ -85,34 +99,40 @@ export default function AuthPage() {
               />
             </div>
             <div className="relative z-10">
-              <h1 className="font-headline mb-4 text-4xl font-black italic tracking-tighter text-primary-container">
+              <Link
+                to="/"
+                className="inline-block font-headline mb-4 text-4xl font-black italic tracking-tighter text-emerald-600 dark:text-primary-container"
+              >
                 SAGE
-              </h1>
-              <p className="font-label text-sm uppercase tracking-widest text-on-surface-variant">
+              </Link>
+              <p className="font-label text-sm uppercase tracking-widest text-zinc-600 dark:text-on-surface-variant">
                 Kinetic Ledger System
               </p>
             </div>
             <div className="relative z-10 mt-auto">
-              <p className="font-headline max-w-sm text-3xl font-bold leading-tight tracking-tight text-on-surface">
+              <p className="font-headline max-w-sm text-3xl font-bold leading-tight tracking-tight text-zinc-900 dark:text-on-surface">
                 Stateful audit engine for high-end editorial experiences.
               </p>
             </div>
           </div>
-          <div className="flex flex-col justify-center bg-surface/40 p-8 backdrop-blur-3xl md:p-12 lg:p-16">
+          <div className="flex flex-col justify-center bg-white/90 p-8 backdrop-blur-3xl md:p-12 lg:p-16 dark:bg-surface/40">
             <div className="mx-auto w-full max-w-md">
               <div className="mb-8 md:hidden">
-                <h1 className="font-headline text-3xl font-black italic tracking-tighter text-primary-container">
+                <Link
+                  to="/"
+                  className="font-headline inline-block text-3xl font-black italic tracking-tighter text-emerald-600 dark:text-primary-container"
+                >
                   SAGE
-                </h1>
+                </Link>
               </div>
-              <div className="mb-6 flex gap-2 rounded-sm bg-surface-container-highest/50 p-1">
+              <div className="mb-6 flex gap-2 rounded-sm bg-zinc-100/90 p-1 dark:bg-surface-container-highest/50">
                 <button
                   type="button"
                   onClick={() => setRegisterMode(false)}
                   className={`flex-1 rounded-sm py-2 font-label text-xs font-bold uppercase tracking-wider transition-colors ${
                     !isRegister
-                      ? "bg-primary-container text-on-primary-fixed"
-                      : "text-on-surface-variant hover:text-on-surface"
+                      ? "bg-emerald-500 text-white dark:bg-primary-container dark:text-on-primary-fixed"
+                      : "text-zinc-600 hover:text-zinc-900 dark:text-on-surface-variant dark:hover:text-on-surface"
                   }`}
                 >
                   Login
@@ -122,16 +142,18 @@ export default function AuthPage() {
                   onClick={() => setRegisterMode(true)}
                   className={`flex-1 rounded-sm py-2 font-label text-xs font-bold uppercase tracking-wider transition-colors ${
                     isRegister
-                      ? "bg-primary-container text-on-primary-fixed"
-                      : "text-on-surface-variant hover:text-on-surface"
+                      ? "bg-emerald-500 text-white dark:bg-primary-container dark:text-on-primary-fixed"
+                      : "text-zinc-600 hover:text-zinc-900 dark:text-on-surface-variant dark:hover:text-on-surface"
                   }`}
                 >
                   Register
                 </button>
               </div>
               <div className="mb-10 text-center md:text-left">
-                <h2 className="font-headline mb-2 text-3xl font-bold tracking-tight">{title}</h2>
-                <p className="font-label text-sm uppercase tracking-widest text-on-surface-variant">
+                <h2 className="font-headline mb-2 text-3xl font-bold tracking-tight text-zinc-900 dark:text-on-surface">
+                  {title}
+                </h2>
+                <p className="font-label text-sm uppercase tracking-widest text-zinc-500 dark:text-on-surface-variant">
                   {subtitle}
                 </p>
               </div>
@@ -139,7 +161,7 @@ export default function AuthPage() {
                 <button
                   type="button"
                   onClick={() => console.log("TODO: Implement [Continue with Google]")}
-                  className="flex w-full items-center justify-center gap-3 rounded-sm border border-outline-variant/20 bg-surface-variant/20 px-4 py-3 font-label text-sm uppercase tracking-wider text-on-surface backdrop-blur-md transition-colors hover:bg-surface-container-highest"
+                  className="flex w-full items-center justify-center gap-3 rounded-sm border border-zinc-200 bg-zinc-50 px-4 py-3 font-label text-sm uppercase tracking-wider text-zinc-800 backdrop-blur-md transition-colors hover:bg-zinc-100 dark:border-outline-variant/20 dark:bg-surface-variant/20 dark:text-on-surface dark:hover:bg-surface-container-highest"
                 >
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
@@ -149,7 +171,7 @@ export default function AuthPage() {
                 <button
                   type="button"
                   onClick={() => console.log("TODO: Implement [Continue with GitHub]")}
-                  className="flex w-full items-center justify-center gap-3 rounded-sm border border-outline-variant/20 bg-surface-variant/20 px-4 py-3 font-label text-sm uppercase tracking-wider text-on-surface backdrop-blur-md transition-colors hover:bg-surface-container-highest"
+                  className="flex w-full items-center justify-center gap-3 rounded-sm border border-zinc-200 bg-zinc-50 px-4 py-3 font-label text-sm uppercase tracking-wider text-zinc-800 backdrop-blur-md transition-colors hover:bg-zinc-100 dark:border-outline-variant/20 dark:bg-surface-variant/20 dark:text-on-surface dark:hover:bg-surface-container-highest"
                 >
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                     <path
@@ -162,22 +184,22 @@ export default function AuthPage() {
                 </button>
               </div>
               <div className="relative mb-6 flex items-center py-5">
-                <div className="flex-grow border-t border-outline-variant/30" />
-                <span className="mx-4 flex-shrink-0 font-label text-xs uppercase tracking-widest text-on-surface-variant">
+                <div className="flex-grow border-t border-zinc-200 dark:border-outline-variant/30" />
+                <span className="mx-4 flex-shrink-0 font-label text-xs uppercase tracking-widest text-zinc-500 dark:text-on-surface-variant">
                   Or
                 </span>
-                <div className="flex-grow border-t border-outline-variant/30" />
+                <div className="flex-grow border-t border-zinc-200 dark:border-outline-variant/30" />
               </div>
               <form className="space-y-6" onSubmit={handleSubmit}>
                 <div>
                   <label
-                    className="mb-2 block font-label text-sm uppercase tracking-[0.1em] text-on-surface-variant"
+                    className="mb-2 block font-label text-sm uppercase tracking-[0.1em] text-zinc-600 dark:text-on-surface-variant"
                     htmlFor="email"
                   >
                     Email Address
                   </label>
                   <input
-                    className="w-full rounded-sm border-none bg-surface-container-highest px-4 py-3 font-body text-on-surface placeholder:text-on-surface-variant/50 transition-all focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] focus:ring-1 focus:ring-primary"
+                    className="w-full rounded-sm border border-zinc-200 bg-white px-4 py-3 font-body text-zinc-900 placeholder:text-zinc-400 transition-all focus:border-emerald-500 focus:shadow-sm focus:ring-1 focus:ring-emerald-500 dark:border-none dark:bg-surface-container-highest dark:text-on-surface dark:placeholder:text-on-surface-variant/50 dark:focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] dark:focus:ring-primary"
                     id="email"
                     placeholder="Enter your email"
                     type="email"
@@ -189,7 +211,7 @@ export default function AuthPage() {
                 <div>
                   <div className="mb-2 flex items-baseline justify-between">
                     <label
-                      className="block font-label text-sm uppercase tracking-[0.1em] text-on-surface-variant"
+                      className="block font-label text-sm uppercase tracking-[0.1em] text-zinc-600 dark:text-on-surface-variant"
                       htmlFor="password"
                     >
                       Password
@@ -198,14 +220,14 @@ export default function AuthPage() {
                       <button
                         type="button"
                         onClick={() => console.log("TODO: Implement [Password Reset]")}
-                        className="font-label text-xs uppercase tracking-wider text-primary-container transition-colors hover:text-primary-fixed-dim"
+                        className="font-label text-xs uppercase tracking-wider text-emerald-600 transition-colors hover:text-emerald-700 dark:text-primary-container dark:hover:text-primary-fixed-dim"
                       >
                         Reset
                       </button>
                     )}
                   </div>
                   <input
-                    className="w-full rounded-sm border-none bg-surface-container-highest px-4 py-3 font-body text-on-surface placeholder:text-on-surface-variant/50 transition-all focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] focus:ring-1 focus:ring-primary"
+                    className="w-full rounded-sm border border-zinc-200 bg-white px-4 py-3 font-body text-zinc-900 placeholder:text-zinc-400 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-none dark:bg-surface-container-highest dark:text-on-surface dark:placeholder:text-on-surface-variant/50 dark:focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] dark:focus:ring-primary"
                     id="password"
                     placeholder="Enter your password"
                     type="password"
@@ -213,20 +235,20 @@ export default function AuthPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete={isRegister ? "new-password" : "current-password"}
                   />
-                  <p className="mt-2 font-label text-[11px] leading-snug text-on-surface-variant/90">
+                  <p className="mt-2 font-label text-[11px] leading-snug text-zinc-500 dark:text-on-surface-variant/90">
                     Password strength: Must be at least 8 characters with a symbol.
                   </p>
                 </div>
                 {isRegister && (
                   <div>
                     <label
-                      className="mb-2 block font-label text-sm uppercase tracking-[0.1em] text-on-surface-variant"
+                      className="mb-2 block font-label text-sm uppercase tracking-[0.1em] text-zinc-600 dark:text-on-surface-variant"
                       htmlFor="confirmPassword"
                     >
                       Confirm Password
                     </label>
                     <input
-                      className="w-full rounded-sm border-none bg-surface-container-highest px-4 py-3 font-body text-on-surface placeholder:text-on-surface-variant/50 transition-all focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] focus:ring-1 focus:ring-primary"
+                      className="w-full rounded-sm border border-zinc-200 bg-white px-4 py-3 font-body text-zinc-900 placeholder:text-zinc-400 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-none dark:bg-surface-container-highest dark:text-on-surface dark:placeholder:text-on-surface-variant/50 dark:focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] dark:focus:ring-primary"
                       id="confirmPassword"
                       placeholder="Re-enter your password"
                       type="password"
@@ -242,20 +264,29 @@ export default function AuthPage() {
                   </p>
                 )}
                 <button
-                  className="mt-8 w-full rounded-none bg-gradient-to-br from-primary-container to-primary-fixed-dim py-4 font-headline text-sm font-bold uppercase tracking-wider text-on-primary-fixed shadow-[0px_10px_20px_rgba(0,255,65,0.1)] transition-opacity hover:opacity-90"
+                  className="mt-8 w-full rounded-none bg-gradient-to-br from-emerald-500 to-emerald-600 py-4 font-headline text-sm font-bold uppercase tracking-wider text-white shadow-md shadow-emerald-500/25 transition-opacity hover:opacity-90 dark:from-primary-container dark:to-primary-fixed-dim dark:text-on-primary-fixed dark:shadow-[0px_10px_20px_rgba(0,255,65,0.1)]"
                   type="submit"
                 >
                   {isRegister ? "Create account" : "Authenticate"}
                 </button>
               </form>
+              {!isRegister && (
+                <button
+                  type="button"
+                  onClick={handleTestLogin}
+                  className="mt-4 w-full rounded-sm border border-dashed border-emerald-500/60 py-3 font-headline text-sm font-bold uppercase tracking-wider text-emerald-700 transition-colors hover:bg-emerald-500/10 dark:border-primary-container/50 dark:text-primary-container dark:hover:bg-primary-container/10"
+                >
+                  Demo Login
+                </button>
+              )}
               <div className="mt-8 text-center">
-                <p className="font-body text-sm text-on-surface-variant">
+                <p className="font-body text-sm text-zinc-600 dark:text-on-surface-variant">
                   {isRegister ? "Already have access? " : "No access? "}
                   {isRegister ? (
                     <button
                       type="button"
                       onClick={() => setRegisterMode(false)}
-                      className="ml-1 border-b border-primary-container/30 pb-0.5 text-primary-container transition-colors hover:border-primary-container hover:text-primary-fixed-dim"
+                      className="ml-1 border-b border-emerald-500/40 pb-0.5 text-emerald-700 transition-colors hover:border-emerald-600 dark:border-primary-container/30 dark:text-primary-container dark:hover:border-primary-container dark:hover:text-primary-fixed-dim"
                     >
                       Sign in
                     </button>
@@ -263,7 +294,7 @@ export default function AuthPage() {
                     <button
                       type="button"
                       onClick={() => setRegisterMode(true)}
-                      className="ml-1 border-b border-primary-container/30 pb-0.5 text-primary-container transition-colors hover:border-primary-container hover:text-primary-fixed-dim"
+                      className="ml-1 border-b border-emerald-500/40 pb-0.5 text-emerald-700 transition-colors hover:border-emerald-600 dark:border-primary-container/30 dark:text-primary-container dark:hover:border-primary-container dark:hover:text-primary-fixed-dim"
                     >
                       Register
                     </button>
@@ -274,7 +305,7 @@ export default function AuthPage() {
                       <button
                         type="button"
                         onClick={() => console.log("TODO: Implement [Request provisioning]")}
-                        className="border-b border-primary-container/30 pb-0.5 text-primary-container transition-colors hover:border-primary-container hover:text-primary-fixed-dim"
+                        className="border-b border-emerald-500/40 pb-0.5 text-emerald-700 transition-colors hover:border-emerald-600 dark:border-primary-container/30 dark:text-primary-container dark:hover:border-primary-container dark:hover:text-primary-fixed-dim"
                       >
                         Request provisioning
                       </button>
@@ -282,8 +313,8 @@ export default function AuthPage() {
                   )}
                 </p>
               </div>
-              <p className="mt-6 text-center font-label text-xs text-on-surface-variant">
-                <Link to="/" className="text-primary-container hover:underline">
+              <p className="mt-6 text-center font-label text-xs text-zinc-500 dark:text-on-surface-variant">
+                <Link to="/" className="text-emerald-600 hover:underline dark:text-primary-container">
                   ← Back to landing
                 </Link>
               </p>

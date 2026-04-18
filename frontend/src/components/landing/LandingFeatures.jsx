@@ -1,12 +1,15 @@
 export default function LandingFeatures() {
   return (
-    <section className="relative bg-surface-container-low py-32" id="features">
+    <section
+      className="relative bg-zinc-200/50 py-32 dark:bg-surface-container-low"
+      id="features"
+    >
       <div className="mx-auto max-w-[1440px] px-8">
         <div className="mb-20 text-center">
-          <h2 className="font-display mb-4 text-4xl font-bold text-on-surface md:text-5xl">
+          <h2 className="font-display mb-4 text-4xl font-bold text-zinc-900 md:text-5xl dark:text-on-surface">
             Core Capabilities
           </h2>
-          <p className="font-label text-sm uppercase tracking-widest text-on-surface-variant">
+          <p className="font-label text-sm uppercase tracking-widest text-zinc-600 dark:text-on-surface-variant">
             Engineered for Velocity
           </p>
         </div>
@@ -45,15 +48,17 @@ export default function LandingFeatures() {
           ].map((card) => (
             <div
               key={card.title}
-              className="glass-panel ghost-border rounded-xl p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:bg-surface-variant/40 hover:shadow-2xl hover:shadow-primary-container/20"
+              className="glass-panel ghost-border rounded-xl p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:bg-white/90 hover:shadow-2xl hover:shadow-emerald-500/20 dark:hover:bg-surface-variant/40 dark:hover:shadow-primary-container/20"
             >
-              <span className="material-symbols-outlined mb-6 text-4xl text-primary-container">
+              <span className="material-symbols-outlined mb-6 text-4xl text-emerald-600 dark:text-primary-container">
                 {card.icon}
               </span>
-              <h3 className="font-display mb-3 text-xl font-bold text-on-surface">
+              <h3 className="font-display mb-3 text-xl font-bold text-zinc-900 dark:text-on-surface">
                 {card.title}
               </h3>
-              <p className="text-sm leading-relaxed text-on-surface-variant">{card.body}</p>
+              <p className="text-sm leading-relaxed text-zinc-600 dark:text-on-surface-variant">
+                {card.body}
+              </p>
             </div>
           ))}
         </div>
