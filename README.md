@@ -1,123 +1,109 @@
-# AI Code Review Agent
+# SAGE — Stateful Audit & Generation Engine
 
-A hackathon-ready AI code reviewer that combines **LLM reasoning** with **team memory** so feedback gets smarter over time.
+> **Memory-native AI code review for real engineering teams.**
+>
+> SAGE combines fast LLM reasoning with persistent team memory so reviews improve over time instead of restarting from zero on every PR.
 
-This project includes:
-- A Node.js + Express backend for review, feedback, and memory APIs
-- A React (Vite) frontend with a modern dark IDE-style interface
-- Hindsight memory integration to retain team-specific patterns and mistakes
-- Groq-powered code review generation with markdown output
-
----
-
-## Why this project
-
-Most AI code reviewers treat every review like a fresh conversation.  
-This agent is different: it remembers how a specific team tends to code and what mistakes they repeatedly make.
-
-That means review feedback becomes:
-- More specific to your codebase habits
-- More consistent with your team standards
-- Better over time as corrections are saved
+<p align="left">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
+  <a href="https://react.dev/"><img src="https://img.shields.io/badge/frontend-React-61DAFB?logo=react&logoColor=white" alt="React" /></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/backend-Node.js-339933?logo=node.js&logoColor=white" alt="Node.js" /></a>
+  <a href="https://groq.com/"><img src="https://img.shields.io/badge/LLM-Groq-000000" alt="Groq" /></a>
+  <a href="https://hindsight.vectorize.io/"><img src="https://img.shields.io/badge/memory-Hindsight-8A2BE2" alt="Hindsight" /></a>
+</p>
 
 ---
 
-## How Hindsight memory is used
+## The Problem & The Solution
 
-The memory system is powered by Hindsight (Vectorize) and bank-scoped storage.
+### The Problem: Stateless LLM Amnesia
+Most AI code reviewers are **stateless**. They can spot syntax issues in the current snippet, but they forget:
+- your team conventions,
+- recurring architectural mistakes,
+- feedback from earlier PRs,
+- and why previous decisions were made.
 
-### Memory lifecycle
+The result is repetitive, generic feedback and low trust.
 
-1. **Recall before review**
-   - Before generating a review, the backend queries Hindsight for relevant team/language memories.
-   - These memories are injected into the LLM system prompt as institutional knowledge.
+### The Solution: SAGE + Hindsight Memory
+SAGE solves this by pairing LLM review generation with **persistent vector memory via Hindsight**:
+1. Retrieve relevant team memories before review.
+2. Inject that context into the model prompt.
+3. Generate targeted, team-aware feedback.
+4. Save new review signals and human corrections back to memory.
 
-2. **Review generation**
-   - Groq model reviews the submitted code with memory context.
-   - Output is returned as markdown to the frontend.
-
-3. **Retain new learning**
-   - The backend stores a summarized issue pattern from each review back into Hindsight.
-   - Memories include metadata such as `type`, `teamName`, `language`, `pattern`, `severity`, `timestamp`.
-
-4. **Feedback-driven correction**
-   - User feedback (`thumbs down + correction`) is stored as `type: "correction"`.
-   - Future reviews can reference those corrections to avoid repeating poor suggestions.
+This creates a compounding loop where the reviewer gets sharper with each cycle. 🧠
 
 ---
 
-## Tech stack
+## Demo & Media
 
-### Backend
-- **Node.js**
-- **Express**
-- **dotenv**
-- **cors**
-- **Hindsight API** (memory retain + recall)
-- **Groq Chat Completions API**
-
-### Frontend
-- **React**
-- **Vite**
-- **react-markdown**
-- **CSS Modules** (custom dark theme UI)
-
----
-
-## Project structure
+- 🎥 **YouTube Demo:** [Insert Video Link Here](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+- 🗺️ **Architecture Diagram:** `docs/architecture/sage-architecture.png` *(add your final diagram here)*
 
 ```text
-code_review_agent/
-├── server.js
-├── routes/
-│   └── review.js
-├── services/
-│   ├── hindsight.js
-│   └── llm.js
-├── seed-demo.js
-├── demo-code-1.js
-├── demo-code-2.js
-├── demo-code-3.js
-├── .env.example
-├── package.json
-└── frontend/
-    ├── src/
-    ├── package.json
-    └── vite.config.js
+Frontend (React) -> Backend (Express) -> Groq (Review JSON)
+                             |
+                             -> Hindsight (Recall + Retain Team Memory)
 ```
 
 ---
 
-## Setup instructions
+## Core Features
 
-## 1) Clone and install backend dependencies
+- **Stateful Team Memory** — persists standards, mistakes, and corrections across reviews.
+- **Hyper-Personalized Standards** — reviews adapt to team style and historical decisions.
+- **Correction Learning Loop** — user corrections are retained as memory for future inference.
+- **Structured Review Output** — review payloads use machine-friendly JSON for robust rendering.
+- **Fast Web Console** — React + Tailwind dashboard for submission, scoring, and memory inspection.
+- **Memory Recall by Team/Language** — filters context for relevant and precise review grounding.
+- **Hackathon-Ready UX** — polished UI, demo flow, and contributor-friendly docs.
+- **Extensible Integration Surface** — ready for CI workflows and future GitHub PR automation.
+
+---
+
+## Related Articles
+
+- [How I built a stateful code reviewer with Hindsight](./docs/articles/how-i-built-a-stateful-code-reviewer-with-hindsight.md)
+- [What I learned integrating Hindsight into a code pipeline](./docs/articles/hindsight-integration-lessons.md)
+- [Why stateless code reviewers fail without Hindsight](./docs/articles/why-stateless-code-reviewers-fail.md)
+
+> Replace these with your published blog URLs when live.
+
+---
+
+## Quick Start
+
+### 1) Clone and install
 
 ```bash
+git clone https://github.com/YOUR_ORG_OR_USER/code_review_agent.git
+cd code_review_agent
 npm install
 ```
 
-## 2) Configure environment variables
-
-Create `.env` in project root:
-
-```env
-HINDSIGHT_API_KEY=your_hindsight_api_key
-HINDSIGHT_BANK_ID=codereview
-GROQ_API_KEY=your_groq_api_key
-PORT=3001
-```
-
-You can copy from `.env.example` if needed.
-
-## 3) Start backend
+### 2) Configure environment
 
 ```bash
-npm start
+cp .env.example .env
 ```
 
-Backend runs at: `http://localhost:3001`
+Set required values in `.env`:
 
-## 4) Install and run frontend
+```env
+PORT=3001
+HINDSIGHT_API_KEY=your_hindsight_api_key_here
+HINDSIGHT_BANK_ID=codereview
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+### 3) Start backend
+
+```bash
+npm run dev
+```
+
+### 4) Start frontend
 
 ```bash
 cd frontend
@@ -125,96 +111,26 @@ npm install
 npm run dev
 ```
 
-Frontend runs at: `http://localhost:3000`
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:3001`
+
+For full setup details, see [`SETUP.md`](./SETUP.md).
 
 ---
 
-## API overview
+## Contributors
 
-### `POST /api/review`
-Submit code for review.
+Thanks to everyone building SAGE. 🚀
 
-Request body:
-```json
-{
-  "code": "string",
-  "language": "JavaScript",
-  "filename": "example.js",
-  "teamName": "SinTax"
-}
-```
+- [@YOUR_GITHUB_HANDLE](https://github.com/YOUR_GITHUB_HANDLE)
+- [@TEAMMATE_HANDLE](https://github.com/TEAMMATE_HANDLE)
+- [@ANOTHER_CONTRIBUTOR](https://github.com/ANOTHER_CONTRIBUTOR)
 
-### `POST /api/feedback`
-Submit feedback on a review.
-
-Request body:
-```json
-{
-  "reviewId": "uuid",
-  "wasHelpful": false,
-  "corrections": "The issue is actually in input validation.",
-  "teamName": "SinTax"
-}
-```
-
-### `GET /api/memories/:teamName`
-Get learned memories for a team.
+Want to contribute? Read [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ---
 
-## Seeding demo data
+## License
 
-Preload sample memories + generate demo snippets:
-
-```bash
-node seed-demo.js
-```
-
-This creates:
-- `demo-code-1.js`
-- `demo-code-2.js`
-- `demo-code-3.js`
-
-Use these files in the UI to demo team-specific memory-aware reviews.
-
----
-
-## How the agent learns over time
-
-The learning loop is simple and practical:
-
-- **Step 1:** Team submits code
-- **Step 2:** Agent recalls past team issues/standards
-- **Step 3:** Agent reviews code using recalled context
-- **Step 4:** Review summary is saved as new memory
-- **Step 5:** Human feedback is saved as correction memory
-- **Step 6:** Next review benefits from all prior knowledge
-
-Over many reviews, the system gradually adapts to:
-- Team coding style
-- Common bugs and anti-patterns
-- Internal standards and evolving conventions
-
----
-
-## Screenshots
-
-> Add your hackathon demo screenshots here.
-
-### Main dashboard
-![Main Dashboard](./docs/screenshots/dashboard.png)
-
-### Review results with memory-aware feedback
-![Review Results](./docs/screenshots/review-results.png)
-
-### Agent memory panel
-![Memory Panel](./docs/screenshots/memory-panel.png)
-
-> Tip: create `docs/screenshots/` and drop images with matching names.
-
----
-
-## Hackathon pitch (one-liner)
-
-**An AI code reviewer that remembers your team’s mistakes, adapts to your standards, and improves with every correction.**
+Released under the [MIT License](./LICENSE).
 
