@@ -43,10 +43,11 @@ async function hindsightRequest(path, body) {
  */
 async function storeMemory({ teamName, content, memoryType, metadata = {} }) {
   const memoryContentString = content;
+  const resolvedType = metadata.type || memoryType || "note";
   const metadataObject = {
     teamName,
-    memoryType,
-    createdAt: new Date().toISOString(),
+    type: resolvedType,
+    timestamp: metadata.timestamp || new Date().toISOString(),
     ...metadata
   };
 
@@ -63,13 +64,20 @@ async function storeMemory({ teamName, content, memoryType, metadata = {} }) {
 /**
  * Search memories for a team.
  */
-async function searchMemories({ teamName, query, topK = 5 }) {
+async function searchMemories({ teamName, language, query, topK = 5 }) {
+  const filter = {
+    teamName
+  };
+
+  // Include language as a filter when available to retrieve tech-stack-specific memories.
+  if (language) {
+    filter.language = language;
+  }
+
   const result = await hindsightRequest("/memories/recall", {
     query,
     top_k: topK,
-    filter: {
-      teamName
-    }
+    filter
   });
 
   return result;

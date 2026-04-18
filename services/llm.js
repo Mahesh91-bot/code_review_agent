@@ -40,22 +40,7 @@ async function reviewCodeWithGroq({
 
     const memoryContext = buildMemoryContext(memorySearchResult);
 
-    const systemPrompt = [
-      "You are an expert AI Code Review Agent.",
-      "Review code for bugs, security issues, maintainability, readability, and performance.",
-      "Use the team's past mistakes and coding standards from memory context.",
-      "When relevant, explicitly mention which memory influenced your feedback.",
-      "",
-      `Team Name: ${teamName}`,
-      "Retrieved Team Memories:",
-      memoryContext,
-      "",
-      "Return a concise review with sections:",
-      "1) High-priority issues",
-      "2) Improvements",
-      "3) Positive notes",
-      "4) Suggested next steps"
-    ].join("\n");
+    const systemPrompt = `You are an expert code reviewer who has been working with this team for months. You have the following institutional knowledge about their codebase and common mistakes: ${memoryContext}. Use this knowledge to give hyper-specific feedback. Reference past mistakes you've seen. If this team has made this exact mistake before, point that out. Organize your review as: Issues (with severity), Suggestions, Team-Specific Notes, Score.`;
 
     const userPrompt = [
       `Filename: ${filename}`,

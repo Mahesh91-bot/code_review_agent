@@ -9,6 +9,31 @@ const { reviewCodeWithGroq } = require("../services/llm");
 
 const router = express.Router();
 
+function inferSeverityFromReview(reviewText) {
+  const lowered = (reviewText || "").toLowerCase();
+  if (
+    lowered.includes("critical") ||
+    lowered.includes("security") ||
+    lowered.includes("vulnerability") ||
+    lowered.includes("high")
+  ) {
+    return "high";
+  }
+  if (lowered.includes("medium") || lowered.includes("warning")) {
+    return "medium";
+  }
+  return "low";
+}
+
+function inferPatternFromReview(reviewText) {
+  const firstLine = (reviewText || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .find((line) => line.length > 0);
+
+  return firstLine || "General code-quality and standards issues found.";
+}
+
 /**
  * POST /api/review
  * Accepts code and returns an AI review that uses team memory context.
@@ -26,7 +51,13 @@ router.post("/review", async (req, res) => {
     // 1) Retrieve memories so the review can learn from team history.
     const memories = await searchMemories({
       teamName,
-      query: `Past mistakes and coding standards for ${language} in ${filename}`,
+      language,
+      query: [
+        `Team: ${teamName}`,
+        `Language: ${language}`,
+        `Filename: ${filename}`,
+        "Recall past mistakes, coding standards, and recurring bug patterns for this stack."
+      ].join(" | "),
       topK: 8
     });
 
@@ -40,22 +71,28 @@ router.post("/review", async (req, res) => {
     });
 
     const reviewId = randomUUID();
+    const severity = inferSeverityFromReview(reviewResult.review);
+    const pattern = inferPatternFromReview(reviewResult.review);
 
     // 3) Save this review back into memory so future reviews improve.
     await storeMemory({
       teamName,
-      memoryType: "review",
+      memoryType: "code_issue",
       content: [
-        `Review ID: ${reviewId}`,
-        `Filename: ${filename}`,
-        `Language: ${language}`,
-        "Generated Review:",
-        reviewResult.review
+        `Team ${teamName} recurring issue in ${filename} (${language}).`,
+        `Pattern: ${pattern}`,
+        `Severity: ${severity}`,
+        "Summary of reviewer findings recorded for future team-specific recall."
       ].join("\n"),
       metadata: {
-        reviewId,
+        type: "code_issue",
+        teamName,
+        language,
+        pattern,
+        severity,
+        timestamp: new Date().toISOString(),
         filename,
-        language
+        reviewId
       }
     });
 
@@ -92,13 +129,18 @@ router.post("/feedback", async (req, res) => {
       // teamName is optional here because the requested payload does not require it.
       // If missing, we still store the feedback under a shared bucket.
       teamName: teamName || "unknown-team",
-      memoryType: "feedback",
+      memoryType: !wasHelpful || corrections ? "correction" : "feedback",
       content: [
         `Feedback for Review ID: ${reviewId}`,
         `Helpful: ${wasHelpful}`,
         `Corrections: ${corrections || "No corrections provided"}`
       ].join("\n"),
       metadata: {
+        type: !wasHelpful || corrections ? "correction" : "feedback",
+        teamName: teamName || "unknown-team",
+        pattern: corrections || "General feedback on review quality.",
+        severity: !wasHelpful ? "high" : "low",
+        timestamp: new Date().toISOString(),
         reviewId,
         wasHelpful
       }
