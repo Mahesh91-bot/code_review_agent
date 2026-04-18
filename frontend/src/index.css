@@ -1,11 +1,113 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+@import "tailwindcss";
+
+@theme {
+  --font-headline: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  --color-on-secondary-fixed-variant: #0036bc;
+  --color-on-secondary-container: #d0d6ff;
+  --color-on-tertiary: #002583;
+  --color-secondary-fixed-dim: #b8c4ff;
+  --color-primary-fixed-dim: #00e639;
+  --color-secondary-fixed: #dde1ff;
+  --color-primary-fixed: #72ff70;
+  --color-surface-container: #201f22;
+  --color-on-primary-container: #007117;
+  --color-outline-variant: #3b4b37;
+  --color-on-primary-fixed: #002203;
+  --color-on-tertiary-fixed-variant: #0f3ab0;
+  --color-on-primary: #003907;
+  --color-secondary: #b8c4ff;
+  --color-tertiary-fixed-dim: #b7c4ff;
+  --color-surface-tint: #00e639;
+  --color-on-tertiary-container: #3657cb;
+  --color-inverse-primary: #006e16;
+  --color-surface: #131315;
+  --color-on-tertiary-fixed: #001453;
+  --color-tertiary-fixed: #dde1ff;
+  --color-on-secondary-fixed: #001355;
+  --color-surface-container-highest: #353437;
+  --color-error: #ffb4ab;
+  --color-secondary-container: #0449f3;
+  --color-surface-container-lowest: #0e0e10;
+  --color-on-surface: #e5e1e4;
+  --color-on-error: #690005;
+  --color-surface-container-high: #2a2a2c;
+  --color-outline: #84967e;
+  --color-tertiary: #faf8ff;
+  --color-inverse-on-surface: #313032;
+  --color-primary-container: #00ff41;
+  --color-surface-bright: #39393b;
+  --color-on-primary-fixed-variant: #00530e;
+  --color-primary: #ebffe2;
+  --color-inverse-surface: #e5e1e4;
+  --color-error-container: #93000a;
+  --color-surface-variant: #353437;
+  --color-on-secondary: #002486;
+  --color-surface-container-low: #1c1b1d;
+  --color-tertiary-container: #d5dbff;
+  --color-on-surface-variant: #b9ccb2;
+  --color-surface-dim: #131315;
+  --color-on-error-container: #ffdad6;
+  --color-background: #131315;
+  --color-on-background: #e5e1e4;
+
+  --radius-DEFAULT: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 0.75rem;
 }
 
-body {
-  margin: 0;
-  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: #050805;
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply bg-surface text-on-surface font-body min-h-screen;
+  }
+  .font-label {
+    font-family: var(--font-label);
+  }
+  .font-display {
+    font-family: var(--font-headline);
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .bg-grid-pattern {
+    background-size: 24px 24px;
+    background-image:
+      linear-gradient(to right, rgba(59, 75, 55, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(59, 75, 55, 0.05) 1px, transparent 1px);
+  }
+  .glow-shadow {
+    box-shadow: 0px 20px 40px rgba(0, 255, 65, 0.04);
+  }
+  .glass-panel {
+    background-color: rgba(53, 52, 55, 0.4);
+    backdrop-filter: blur(24px);
+  }
+  .gradient-cta {
+    background: linear-gradient(135deg, #00ff41, #00e639);
+  }
+  .ghost-border {
+    border: 1px solid rgba(59, 75, 55, 0.15);
+  }
+  @keyframes pulseLine {
+    0% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 1;
+      box-shadow: 0 0 12px #00ff41;
+    }
+    100% {
+      opacity: 0.4;
+    }
+  }
+  .animate-pulse-line {
+    animation: pulseLine 2s infinite ease-in-out;
+  }
 }

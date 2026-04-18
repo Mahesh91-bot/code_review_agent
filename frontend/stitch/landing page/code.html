@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SAGE - Stateful Audit &amp; Generation Engine</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&amp;family=Space+Grotesk:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed-variant": "#0036bc",
+                      "on-secondary-container": "#d0d6ff",
+                      "on-tertiary": "#002583",
+                      "secondary-fixed-dim": "#b8c4ff",
+                      "primary-fixed-dim": "#00e639",
+                      "secondary-fixed": "#dde1ff",
+                      "primary-fixed": "#72ff70",
+                      "surface-container": "#201f22",
+                      "on-primary-container": "#007117",
+                      "outline-variant": "#3b4b37",
+                      "on-primary-fixed": "#002203",
+                      "on-tertiary-fixed-variant": "#0f3ab0",
+                      "on-primary": "#003907",
+                      "secondary": "#b8c4ff",
+                      "tertiary-fixed-dim": "#b7c4ff",
+                      "surface-tint": "#00e639",
+                      "on-tertiary-container": "#3657cb",
+                      "inverse-primary": "#006e16",
+                      "surface": "#131315",
+                      "on-tertiary-fixed": "#001453",
+                      "tertiary-fixed": "#dde1ff",
+                      "on-secondary-fixed": "#001355",
+                      "surface-container-highest": "#353437",
+                      "error": "#ffb4ab",
+                      "secondary-container": "#0449f3",
+                      "surface-container-lowest": "#0e0e10",
+                      "on-surface": "#e5e1e4",
+                      "on-error": "#690005",
+                      "surface-container-high": "#2a2a2c",
+                      "outline": "#84967e",
+                      "tertiary": "#faf8ff",
+                      "inverse-on-surface": "#313032",
+                      "primary-container": "#00ff41",
+                      "surface-bright": "#39393b",
+                      "on-primary-fixed-variant": "#00530e",
+                      "primary": "#ebffe2",
+                      "inverse-surface": "#e5e1e4",
+                      "error-container": "#93000a",
+                      "surface-variant": "#353437",
+                      "on-secondary": "#002486",
+                      "surface-container-low": "#1c1b1d",
+                      "tertiary-container": "#d5dbff",
+                      "on-surface-variant": "#b9ccb2",
+                      "surface-dim": "#131315",
+                      "on-error-container": "#ffdad6",
+                      "background": "#131315",
+                      "on-background": "#e5e1e4"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "fontFamily": {
+                      "headline": ["Inter"],
+                      "body": ["Inter"],
+                      "label": ["Space Grotesk"]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-label { font-family: 'Space Grotesk', sans-serif; }
+        .font-display { font-family: 'Inter', sans-serif; letter-spacing: -0.02em; }
+        
+        .bg-grid-pattern {
+            background-size: 24px 24px;
+            background-image: linear-gradient(to right, rgba(59, 75, 55, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(59, 75, 55, 0.05) 1px, transparent 1px);
+        }
+        .glow-shadow {
+            box-shadow: 0px 20px 40px rgba(0, 255, 65, 0.04);
+        }
+        .glass-panel {
+            background-color: rgba(53, 52, 55, 0.4);
+            backdrop-filter: blur(24px);
+        }
+        .gradient-cta {
+            background: linear-gradient(135deg, #00FF41, #00e639);
+        }
+        .ghost-border {
+            border: 1px solid rgba(59, 75, 55, 0.15);
+        }
+        
+        @keyframes pulseLine {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; box-shadow: 0 0 12px #00FF41; }
+            100% { opacity: 0.4; }
+        }
+        .animate-pulse-line {
+            animation: pulseLine 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-fixed min-h-screen flex flex-col relative overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="bg-[#131315]/80 backdrop-blur-xl shadow-[0px_20px_40px_rgba(0,255,65,0.04)] docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-[1440px] mx-auto">
+<div class="text-2xl font-black tracking-tighter text-[#00FF41] italic">SAGE</div>
+<div class="hidden md:flex space-x-8 items-center">
+<a class="font-['Inter'] font-bold tracking-tight uppercase text-xs text-[#b9ccb2] hover:text-[#00FF41] transition-colors scale-95 active:scale-100 transition-transform" href="#">Product</a>
+<a class="font-['Inter'] font-bold tracking-tight uppercase text-xs text-[#b9ccb2] hover:text-[#00FF41] transition-colors scale-95 active:scale-100 transition-transform" href="#features">Features</a>
+<a class="font-['Inter'] font-bold tracking-tight uppercase text-xs text-[#b9ccb2] hover:text-[#00FF41] transition-colors scale-95 active:scale-100 transition-transform" href="#architecture-flow">Flow</a>
+<a class="font-['Inter'] font-bold tracking-tight uppercase text-xs text-[#b9ccb2] hover:text-[#00FF41] transition-colors scale-95 active:scale-100 transition-transform" href="#hindsight">Hindsight</a>
+<a class="font-['Inter'] font-bold tracking-tight uppercase text-xs text-[#b9ccb2] hover:text-[#00FF41] transition-colors scale-95 active:scale-100 transition-transform" href="#">Docs</a>
+</div>
+<div class="flex space-x-4 items-center">
+<button class="font-['Inter'] font-bold tracking-tight uppercase text-xs text-[#b9ccb2] hover:bg-[#00FF41]/10 hover:text-[#00FF41] duration-300 px-4 py-2 rounded scale-95 active:scale-100 transition-transform">Login</button>
+<button class="font-['Inter'] font-bold tracking-tight uppercase text-xs bg-primary-container text-on-primary-fixed px-6 py-2 rounded hover:opacity-90 scale-95 active:scale-100 transition-transform">Register</button>
+</div>
+</div>
+<div class="h-px w-full bg-[#0e0e10] bg-opacity-50 absolute bottom-0"></div>
+</nav>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative min-h-[921px] flex items-center justify-center bg-surface-container-lowest bg-grid-pattern overflow-hidden pt-20 pb-32">
+<!-- Asymmetric decorative elements -->
+<div class="absolute top-1/4 -left-32 w-96 h-96 bg-primary-container/5 rounded-full blur-3xl mix-blend-screen pointer-events-none"></div>
+<div class="absolute bottom-1/4 -right-32 w-[500px] h-[500px] bg-primary-container/10 rounded-full blur-[100px] mix-blend-screen pointer-events-none"></div>
+<div class="max-w-[1440px] mx-auto px-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+<div class="lg:col-span-8 flex flex-col items-start text-left">
+<div class="flex items-center space-x-3 mb-8">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label text-sm uppercase tracking-widest text-on-surface-variant">System Online // v2.4.1</span>
+</div>
+<h1 class="font-display text-5xl md:text-7xl lg:text-8xl font-black text-on-surface leading-[0.9] mb-8 w-[120%] -ml-1">
+                        The Sage is <br/>
+<span class="text-surface-tint">Watching.</span>
+</h1>
+<p class="text-xl md:text-2xl text-on-surface-variant max-w-2xl mb-12 leading-relaxed font-body">
+                        Stateful AI code reviews that remember your team's history. Stop repeating the same PR comments and let the engine enforce your architectural intent.
+                    </p>
+<div class="flex flex-col sm:flex-row items-center gap-6 w-full sm:w-auto">
+<button class="gradient-cta text-on-primary-fixed font-headline font-bold text-lg px-10 py-4 rounded-sm hover:brightness-110 transition-all w-full sm:w-auto shadow-[0_0_20px_rgba(0,255,65,0.3)]">
+                            Initialize Engine
+                        </button>
+<button class="glass-panel ghost-border text-on-surface font-headline font-bold text-lg px-8 py-4 rounded-sm hover:bg-surface-variant/60 transition-all w-full sm:w-auto flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-xl">terminal</span>
+                            View Docs
+                        </button>
+</div>
+</div>
+<!-- Technical Data Anchor (Asymmetric right column) -->
+<div class="hidden lg:flex lg:col-span-4 flex-col justify-end h-full mt-32">
+<div class="glass-panel ghost-border rounded-lg p-6 glow-shadow">
+<div class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-4 border-b border-outline-variant/15 pb-2">Recent Activity Log</div>
+<div class="space-y-4 font-label text-sm text-on-surface">
+<div class="flex justify-between items-center">
+<span class="text-primary-container">Auditing PR #4092</span>
+<span class="text-on-surface-variant">0.4s</span>
+</div>
+<div class="flex justify-between items-center opacity-70">
+<span>Context loaded (3.2MB)</span>
+<span class="text-on-surface-variant">0.1s</span>
+</div>
+<div class="flex justify-between items-center opacity-50">
+<span>Memory synced</span>
+<span class="text-on-surface-variant">0.8s</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="py-32 bg-surface-container-low relative" id="features">
+<div class="max-w-[1440px] mx-auto px-8">
+<div class="mb-20 text-center">
+<h2 class="font-display text-4xl md:text-5xl font-bold text-on-surface mb-4">Core Capabilities</h2>
+<p class="font-label text-on-surface-variant uppercase tracking-widest text-sm">Engineered for Velocity</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="glass-panel ghost-border rounded-xl p-8 hover:bg-surface-variant/40 transition-colors">
+<span class="material-symbols-outlined text-4xl text-primary-container mb-6">psychology</span>
+<h3 class="font-display text-xl font-bold text-on-surface mb-3">Stateful Team Memory</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">SAGE doesn’t just review syntax; it builds institutional knowledge. Powered by a persistent memory engine, SAGE remembers every piece of feedback, architectural decision, and past mistake your team has made, ensuring you never review the same anti-pattern twice.</p>
+</div>
+<div class="glass-panel ghost-border rounded-xl p-8 hover:bg-surface-variant/40 transition-colors">
+<span class="material-symbols-outlined text-4xl text-primary-container mb-6">tune</span>
+<h3 class="font-display text-xl font-bold text-on-surface mb-3">Hyper-Personalized Code Standards</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Ditch the generic AI advice. SAGE adapts to your codebase. Whether your team strictly uses const over let, prefers fetch over axios, or has highly specific security guards, SAGE enforces your unique internal rules with zero manual configuration.</p>
+</div>
+<div class="glass-panel ghost-border rounded-xl p-8 hover:bg-surface-variant/40 transition-colors">
+<span class="material-symbols-outlined text-4xl text-primary-container mb-6">auto_fix_high</span>
+<h3 class="font-display text-xl font-bold text-on-surface mb-3">1-Click Auto-Remediation</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Finding technical debt is only half the battle. SAGE doesn't just leave comments—it generates the exact, corrected code block instantly. Review, approve, and merge fixes with a single click, accelerating your PR velocity.</p>
+</div>
+<div class="glass-panel ghost-border rounded-xl p-8 hover:bg-surface-variant/40 transition-colors">
+<span class="material-symbols-outlined text-4xl text-primary-container mb-6">loop</span>
+<h3 class="font-display text-xl font-bold text-on-surface mb-3">The Continuous Learning Loop</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">SAGE gets smarter with every interaction. Disagree with a review? Give it a correction once, and SAGE permanently updates its internal model. It grows and adapts alongside your evolving codebase in real-time.</p>
+</div>
+<div class="glass-panel ghost-border rounded-xl p-8 hover:bg-surface-variant/40 transition-colors">
+<span class="material-symbols-outlined text-4xl text-primary-container mb-6">query_stats</span>
+<h3 class="font-display text-xl font-bold text-on-surface mb-3">Engineering Analytics Dashboard</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Turn code reviews into actionable metrics. Get a bird’s-eye view of your team's technical health. Identify recurring code smells, track technical debt reduction, and pinpoint exactly where junior developers need more training.</p>
+</div>
+<div class="glass-panel ghost-border rounded-xl p-8 hover:bg-surface-variant/40 transition-colors">
+<span class="material-symbols-outlined text-4xl text-primary-container mb-6">integration_instructions</span>
+<h3 class="font-display text-xl font-bold text-on-surface mb-3">Seamless Workflow Integration</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">SAGE lives where your developers live. From an intuitive web portal to automated GitHub Pull Request analysis, SAGE provides instant, contextual feedback before a human reviewer ever has to look at the code.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Bento Grid -->
+<section class="py-32 bg-surface relative">
+<div class="max-w-[1440px] mx-auto px-8">
+<div class="mb-20">
+<h2 class="font-display text-4xl md:text-5xl font-bold text-on-surface mb-4">Core Architecture</h2>
+<p class="font-label text-on-surface-variant uppercase tracking-widest text-sm">Beyond Syntax Checking</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
+<!-- Stateful Context -->
+<div class="md:col-span-2 bg-surface-container-low rounded-xl p-10 relative overflow-hidden group">
+<div class="absolute left-0 top-0 bottom-0 w-[2px] bg-primary-container"></div>
+<div class="absolute top-6 right-6">
+<span class="material-symbols-outlined text-3xl text-primary-container opacity-50">memory</span>
+</div>
+<h3 class="font-display text-3xl font-bold text-on-surface mb-4 mt-8">Stateful Context</h3>
+<p class="text-on-surface-variant text-lg max-w-md">SAGE doesn't just read the diff. It holds the entire repository history in working memory, understanding architectural drift over time.</p>
+<div class="absolute -bottom-10 -right-10 w-64 h-64 bg-primary-container/5 rounded-full blur-2xl"></div>
+</div>
+<!-- Autonomous PR Reviews -->
+<div class="bg-surface-container-lowest rounded-xl p-8 relative overflow-hidden ghost-border">
+<div class="absolute top-6 right-6">
+<span class="material-symbols-outlined text-3xl text-on-surface-variant">robot_2</span>
+</div>
+<h3 class="font-display text-2xl font-bold text-on-surface mb-4 mt-12">Autonomous PR Reviews</h3>
+<p class="text-on-surface-variant">Instant, actionable feedback that matches your senior engineer's exact pedantry level.</p>
+</div>
+<!-- Real-time Security -->
+<div class="bg-surface-container-lowest rounded-xl p-8 relative overflow-hidden ghost-border">
+<div class="absolute top-6 right-6">
+<span class="material-symbols-outlined text-3xl text-on-surface-variant">shield_lock</span>
+</div>
+<h3 class="font-display text-2xl font-bold text-on-surface mb-4 mt-12">Security Audits</h3>
+<p class="text-on-surface-variant">Continuous vulnerability scanning mapped against global CVE databases in real-time.</p>
+</div>
+<!-- Visual Tech Element -->
+<div class="md:col-span-2 bg-surface-container-high rounded-xl p-0 relative overflow-hidden">
+<div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
+<div class="relative z-10 h-full flex flex-col justify-center p-10">
+<div class="font-label text-primary-container text-sm mb-2">&gt; Executing semantic analysis...</div>
+<div class="font-label text-on-surface text-lg">Analyzing 4,203 commits to determine preferred styling conventions.</div>
+<div class="mt-6 flex gap-2">
+<div class="h-1 w-12 bg-primary-container"></div>
+<div class="h-1 w-4 bg-primary-container/30"></div>
+<div class="h-1 w-2 bg-primary-container/30"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Architecture Flow Section -->
+<section class="py-32 bg-surface-container-lowest relative overflow-hidden" id="architecture-flow">
+<div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+<div class="max-w-[1440px] mx-auto px-8 relative z-10">
+<div class="text-center mb-24">
+<h2 class="font-display text-4xl md:text-5xl font-bold text-on-surface mb-4">Architecture Flow</h2>
+<p class="font-label text-on-surface-variant uppercase tracking-widest text-sm">The Processing Pipeline</p>
+</div>
+<div class="flex flex-col lg:flex-row items-center justify-between w-full max-w-5xl mx-auto gap-12 lg:gap-4 relative">
+<!-- Item 1: Code Input -->
+<div class="flex flex-col items-center flex-1 w-full lg:w-48 z-10">
+<div class="glass-panel ghost-border rounded-xl p-5 mb-6 w-full h-32 flex items-center justify-center glow-shadow relative overflow-hidden">
+<pre class="font-mono text-[10px] text-on-surface-variant leading-tight w-full overflow-hidden">function processData() {
+  let raw = fetch();
+  return parse(raw);
+}
+                    </pre>
+</div>
+<h4 class="font-display font-bold text-lg text-on-surface mb-2">1. Code Input</h4>
+<p class="text-xs text-on-surface-variant text-center font-body">Raw snippet ingested.</p>
+</div>
+<!-- Connector -->
+<div class="hidden lg:flex items-center justify-center w-16">
+<div class="h-1 w-full bg-primary-container/30 rounded-full relative overflow-hidden">
+<div class="absolute inset-0 bg-primary-container animate-pulse-line"></div>
+</div>
+<span class="material-symbols-outlined text-primary-container -ml-2 text-xl z-10 shadow-[0_0_10px_rgba(0,255,65,0.5)] rounded-full">chevron_right</span>
+</div>
+<!-- Mobile Connector -->
+<span class="material-symbols-outlined text-primary-container text-2xl lg:hidden rotate-90 animate-pulse">arrow_downward</span>
+<!-- Item 2: Hindsight Memory -->
+<div class="flex flex-col items-center flex-1 w-full lg:w-48 z-10">
+<div class="glass-panel ghost-border rounded-full p-6 mb-6 w-28 h-28 flex items-center justify-center glow-shadow relative">
+<div class="absolute inset-0 rounded-full border border-primary-container/40 animate-[ping_3s_ease-in-out_infinite] opacity-50"></div>
+<span class="material-symbols-outlined text-4xl text-primary-container">memory</span>
+</div>
+<h4 class="font-display font-bold text-lg text-on-surface mb-2 text-center">2. Hindsight Memory</h4>
+<p class="text-xs text-on-surface-variant text-center font-body">Historical context analyzed.</p>
+</div>
+<!-- Connector -->
+<div class="hidden lg:flex items-center justify-center w-16">
+<div class="h-1 w-full bg-primary-container/30 rounded-full relative overflow-hidden">
+<div class="absolute inset-0 bg-primary-container animate-pulse-line" style="animation-delay: 0.5s"></div>
+</div>
+<span class="material-symbols-outlined text-primary-container -ml-2 text-xl z-10 shadow-[0_0_10px_rgba(0,255,65,0.5)] rounded-full">chevron_right</span>
+</div>
+<!-- Mobile Connector -->
+<span class="material-symbols-outlined text-primary-container text-2xl lg:hidden rotate-90 animate-pulse" style="animation-delay: 0.5s">arrow_downward</span>
+<!-- Item 3: Cascade Flow -->
+<div class="flex flex-col items-center flex-1 w-full lg:w-48 z-10">
+<div class="glass-panel ghost-border rounded-xl p-5 mb-6 w-full h-32 flex flex-col items-center justify-center glow-shadow">
+<div class="w-full space-y-2">
+<div class="h-1.5 bg-primary-container/40 w-full rounded"></div>
+<div class="h-1.5 bg-primary-container/70 w-3/4 rounded"></div>
+<div class="h-1.5 bg-primary-container/20 w-1/2 rounded"></div>
+</div>
+<span class="material-symbols-outlined text-primary-container text-2xl mt-3 animate-bounce">account_tree</span>
+</div>
+<h4 class="font-display font-bold text-lg text-on-surface mb-2">3. Cascade Flow</h4>
+<p class="text-xs text-on-surface-variant text-center font-body">Decision logic routed.</p>
+</div>
+<!-- Connector -->
+<div class="hidden lg:flex items-center justify-center w-16">
+<div class="h-1 w-full bg-primary-container/30 rounded-full relative overflow-hidden">
+<div class="absolute inset-0 bg-primary-container animate-pulse-line" style="animation-delay: 1s"></div>
+</div>
+<span class="material-symbols-outlined text-primary-container -ml-2 text-xl z-10 shadow-[0_0_10px_rgba(0,255,65,0.5)] rounded-full">chevron_right</span>
+</div>
+<!-- Mobile Connector -->
+<span class="material-symbols-outlined text-primary-container text-2xl lg:hidden rotate-90 animate-pulse" style="animation-delay: 1s">arrow_downward</span>
+<!-- Item 4: Better Code Reviews -->
+<div class="flex flex-col items-center flex-1 w-full lg:w-56 z-10">
+<div class="glass-panel ghost-border border-l-2 border-l-primary-container rounded-xl p-4 mb-6 w-full h-32 flex flex-col justify-center glow-shadow relative">
+<div class="font-label text-[10px] text-primary-container mb-2 uppercase flex items-center">
+<span class="material-symbols-outlined text-[12px] mr-1">auto_awesome</span> AI Review
+                    </div>
+<pre class="font-mono text-[10px] leading-relaxed overflow-hidden"><span class="text-error line-through opacity-60">let raw = fetch();</span>
+<span class="text-primary-container">+ const data = await fetchCached();</span>
+                    </pre>
+</div>
+<h4 class="font-display font-bold text-lg text-on-surface mb-2 text-center">4. Smart Review</h4>
+<p class="text-xs text-on-surface-variant text-center font-body">Annotated output delivered.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- The Persona Section -->
+<section class="py-32 bg-surface-container-lowest relative border-y border-outline-variant/10">
+<div class="max-w-[1440px] mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div class="relative">
+<img alt="Server room with abstract green data streams" class="w-full aspect-square object-cover rounded-xl filter grayscale contrast-125 opacity-60" data-alt="abstract dark server room with glowing electric green data streams and geometric light patterns" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnI62Bfz68_rsM9xdDUOG-xxiUCCPRUnKBchW9MFdgOqibnjT05Q77TBEUJ5OjZeVaIiuv0BLL95tHN-Mo7XvViVUah2AwmnlFVZVbjymVpTyz5iucTnoGBsUK6vxhMOcv7C6tkI7TMlUjEDbF7bgCdPo32rYIcdSXUZV1X2b949mYDOtouhrUpIZGZH5_mRlv0F3DnD4gnUbxenHiABX1vsrQVj7XdBA3lhMU672qT2gUwHJy9HRvBRX0Eu9XGgs3mHIC-7XRjRAR"/>
+<div class="absolute inset-0 bg-primary-container/10 mix-blend-overlay rounded-xl"></div>
+<div class="absolute -bottom-8 -left-8 glass-panel ghost-border p-6 rounded-lg glow-shadow">
+<div class="font-label text-xs text-primary-container mb-1">PERSONA ACTIVE</div>
+<div class="font-display text-xl font-bold">The Veteran Senior</div>
+</div>
+</div>
+<div>
+<h2 class="font-display text-5xl font-black text-on-surface mb-8 leading-tight">Not just a linter.<br/>A partner.</h2>
+<p class="text-xl text-on-surface-variant mb-8 font-body">
+                        We trained SAGE on the communication patterns of top staff engineers. It doesn't just point out errors; it explains the architectural reasoning behind them, mentoring your team as they code.
+                    </p>
+<ul class="space-y-6">
+<li class="flex items-start">
+<span class="material-symbols-outlined text-primary-container mr-4 mt-1">check_circle</span>
+<span class="text-on-surface text-lg">Adapts to your internal jargon and naming conventions.</span>
+</li>
+<li class="flex items-start">
+<span class="material-symbols-outlined text-primary-container mr-4 mt-1">check_circle</span>
+<span class="text-on-surface text-lg">Links comments directly to internal documentation.</span>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Hindsight Deep-Dive -->
+<section class="py-32 bg-surface-container-low relative border-y border-outline-variant/10" id="hindsight">
+<div class="max-w-[1440px] mx-auto px-8">
+<div class="flex flex-col lg:flex-row gap-16 items-center">
+<div class="lg:w-1/2">
+<span class="font-label text-sm text-primary-container tracking-widest uppercase mb-4 block">Stateful Audit Engine</span>
+<h2 class="font-display text-4xl md:text-5xl font-black text-on-surface mb-8 leading-tight">Deep Dive:<br/><span class="text-on-surface-variant">Hindsight</span></h2>
+<div class="font-body text-lg text-on-surface-variant space-y-6 mb-12">
+<p>Hindsight is the foundational memory layer of SAGE. It doesn't just read code; it understands the history, the 'why' behind architectural choices, and structural drift.</p>
+<p>It acts as a persistent ledger, auditing PRs against historical intent rather than just static rules.</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="glass-panel ghost-border text-on-surface font-headline font-bold text-sm px-6 py-3 rounded-sm hover:bg-surface-variant/60 transition-all flex items-center justify-center gap-2" href="#">
+<span class="material-symbols-outlined text-xl">code</span>
+<span>View Hindsight GitHub</span>
+</a>
+<a class="glass-panel ghost-border text-on-surface font-headline font-bold text-sm px-6 py-3 rounded-sm hover:bg-surface-variant/60 transition-all flex items-center justify-center gap-2" href="https://hindsight.vectorize.io">
+<span class="material-symbols-outlined text-xl">language</span>
+<span>Visit Website</span>
+</a>
+</div>
+</div>
+<div class="lg:w-1/2 w-full relative bg-surface border border-outline-variant/15 rounded-lg flex flex-col font-label text-xs text-on-surface-variant overflow-hidden glow-shadow">
+<div class="bg-surface-container-high border-b border-outline-variant/15 p-3 flex items-center justify-between">
+<span class="uppercase tracking-widest">hindsight_cli</span>
+<div class="flex gap-2">
+<div class="w-2.5 h-2.5 rounded-full bg-outline-variant/40"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-outline-variant/40"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-outline-variant/40"></div>
+</div>
+</div>
+<div class="p-6 bg-surface flex-grow overflow-y-auto space-y-3 opacity-90 h-[300px]">
+<div class="flex gap-4"><span class="text-outline-variant w-4">01</span><span class="text-primary-container">&gt; hindsight init --ledger=core_auth</span></div>
+<div class="flex gap-4"><span class="text-outline-variant w-4">02</span><span>[INFO] Initializing stateful vector ledger...</span></div>
+<div class="flex gap-4"><span class="text-outline-variant w-4">03</span><span>[INFO] Indexing historical commit tree (depth: 50)</span></div>
+<div class="flex gap-4"><span class="text-outline-variant w-4">04</span><span class="text-primary-container">&gt; hindsight audit pr_1042</span></div>
+<div class="flex gap-4"><span class="text-outline-variant w-4">05</span><span>[WARN] Structural drift detected in Auth module.</span></div>
+<div class="flex gap-4"><span class="text-outline-variant w-4">06</span><span>[ANALYSIS] PR violates architectural decision ADR-004.</span></div>
+<div class="flex gap-4"><span class="text-outline-variant w-4">07</span><span class="text-error">Rejecting PR. See report for details.</span></div>
+<div class="flex gap-4"><span class="text-outline-variant w-4">08</span><span class="animate-pulse text-primary-container">_</span></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-40 bg-surface relative overflow-hidden flex justify-center items-center">
+<div class="absolute inset-0 bg-primary-container/5 bg-grid-pattern"></div>
+<div class="relative z-10 text-center max-w-3xl px-8">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-container/10 mb-8 relative">
+<div class="absolute inset-0 rounded-full border border-primary-container animate-ping opacity-50"></div>
+<span class="material-symbols-outlined text-3xl text-primary-container">power_settings_new</span>
+</div>
+<h2 class="font-display text-5xl md:text-6xl font-black text-on-surface mb-6">Ready to compile?</h2>
+<p class="text-xl text-on-surface-variant mb-12 font-label">Deploy SAGE to your repository in under 2 minutes.</p>
+<form class="flex flex-col sm:flex-row gap-4 justify-center max-w-xl mx-auto">
+<input class="bg-surface-container-highest ghost-border text-on-surface font-label text-sm px-6 py-4 rounded-sm w-full focus:ring-1 focus:ring-primary-container focus:border-primary-container focus:outline-none placeholder:text-on-surface-variant/50" placeholder="Enter repository URL or email" type="email"/>
+<button class="gradient-cta text-on-primary-fixed font-headline font-bold px-8 py-4 rounded-sm hover:brightness-110 transition-all whitespace-nowrap shadow-[0_0_20px_rgba(0,255,65,0.2)]" type="submit">
+                        Initiate Sequence
+                    </button>
+</form>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#0e0e10] py-12 border-t border-[#00FF41]/10 full-width bottom-0">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-12 max-w-[1440px] mx-auto items-center">
+<div class="text-lg font-bold text-[#00FF41]">SAGE</div>
+<div class="flex flex-wrap gap-6 md:justify-end">
+<a class="font-['Space_Grotesk'] text-[10px] tracking-widest uppercase text-[#b9ccb2] hover:text-[#00FF41] underline underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy</a>
+<a class="font-['Space_Grotesk'] text-[10px] tracking-widest uppercase text-[#b9ccb2] hover:text-[#00FF41] underline underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Terms</a>
+<a class="font-['Space_Grotesk'] text-[10px] tracking-widest uppercase text-[#b9ccb2] hover:text-[#00FF41] underline underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Security</a>
+<a class="font-['Space_Grotesk'] text-[10px] tracking-widest uppercase text-[#b9ccb2] hover:text-[#00FF41] underline underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Status</a>
+</div>
+<div class="font-['Space_Grotesk'] text-[10px] tracking-widest uppercase text-on-surface-variant md:col-span-2 text-center md:text-left mt-8 opacity-50">
+                © 2024 SAGE KINETIC LEDGER. ALL RIGHTS RESERVED.
+            </div>
+</div>
+</footer>
+</body></html>
