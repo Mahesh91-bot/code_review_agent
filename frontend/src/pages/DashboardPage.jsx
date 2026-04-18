@@ -1,32 +1,74 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import ThemeToggle from "../components/ThemeToggle";
 import {
   API_BASE_URL,
+  EMPTY_STRUCTURED_REVIEW,
+  FEEDBACK_API_URL,
   INITIAL_FORM,
   DEMO_SAMPLE,
-  parseReviewSections
+  TEAM_NAME_STORAGE_KEY,
+  formatStructuredReviewAsMarkdown,
+  normalizeStructuredReview
 } from "../lib/reviewUtils";
+
+function ReviewListCard({ title, items, emptyLabel }) {
+  return (
+    <div className="rounded-lg bg-zinc-100/90 p-3 dark:bg-surface-container-low/80">
+      <div className="font-label text-[10px] uppercase text-zinc-600 dark:text-on-surface-variant">
+        {title}
+      </div>
+      {items.length === 0 ? (
+        <p className="mt-1 text-xs leading-relaxed text-zinc-500 italic dark:text-on-surface-variant">
+          {emptyLabel}
+        </p>
+      ) : (
+        <ul className="mt-1 list-disc space-y-1.5 pl-4 text-xs leading-relaxed text-zinc-800 dark:text-on-surface">
+          {items.map((item, index) => (
+            <li key={`${title}-${index}`}>{item}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [isReviewing, setIsReviewing] = useState(false);
   const [reviewMarkdown, setReviewMarkdown] = useState("");
+  const [reviewStructured, setReviewStructured] = useState(() => ({
+    ...EMPTY_STRUCTURED_REVIEW
+  }));
   const [reviewId, setReviewId] = useState("");
   const [requestError, setRequestError] = useState("");
   const [feedbackChoice, setFeedbackChoice] = useState(null);
   const [feedbackCorrection, setFeedbackCorrection] = useState("");
   const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [feedbackSuccess, setFeedbackSuccess] = useState(false);
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
   const [isMemoryOpen, setIsMemoryOpen] = useState(true);
   const [memories, setMemories] = useState([]);
   const [isLoadingMemories, setIsLoadingMemories] = useState(false);
 
-  const parsedSections = useMemo(
-    () => parseReviewSections(reviewMarkdown),
-    [reviewMarkdown]
-  );
+  const originalIssueSummary = useMemo(() => {
+    const blocks = [
+      reviewStructured.issues.join("\n"),
+      reviewStructured.suggestions.join("\n"),
+      reviewStructured.teamNotes.join("\n")
+    ].filter((p) => p && String(p).trim());
+    if (blocks.length > 0) {
+      return blocks.join("\n\n").slice(0, 2000);
+    }
+    return reviewMarkdown ? reviewMarkdown.slice(0, 2000) : "";
+  }, [reviewStructured, reviewMarkdown]);
+
+  useEffect(() => {
+    if (!feedbackSuccess) return undefined;
+    const timer = setTimeout(() => setFeedbackSuccess(false), 8000);
+    return () => clearTimeout(timer);
+  }, [feedbackSuccess]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -78,7 +120,9 @@ export default function DashboardPage() {
     setIsReviewing(true);
     setRequestError("");
     setFeedbackMessage("");
+    setFeedbackSuccess(false);
     setReviewMarkdown("");
+    setReviewStructured({ ...EMPTY_STRUCTURED_REVIEW });
     setReviewId("");
 
     try {
@@ -96,7 +140,11 @@ export default function DashboardPage() {
         throw new Error(payload?.error || "Review request failed.");
       }
 
-      setReviewMarkdown(payload.review || "No review was returned.");
+      const structured = normalizeStructuredReview(payload.review);
+      setReviewStructured(structured);
+      setReviewMarkdown(
+        formatStructuredReviewAsMarkdown(structured).trim() || "No review was returned."
+      );
       setReviewId(payload.reviewId || "");
     } catch (error) {
       setRequestError(error.message);
@@ -107,40 +155,85 @@ export default function DashboardPage() {
 
   const handleFeedbackSubmit = async () => {
     if (!reviewId) {
+      setFeedbackSuccess(false);
       setFeedbackMessage("Generate a review first, then submit feedback.");
       return;
     }
 
     if (feedbackChoice === null) {
+      setFeedbackSuccess(false);
       setFeedbackMessage("Please choose thumbs up or thumbs down first.");
+      return;
+    }
+
+    const storedTeam =
+      typeof localStorage !== "undefined"
+        ? localStorage.getItem(TEAM_NAME_STORAGE_KEY)?.trim() || ""
+        : "";
+    const teamName = storedTeam || formData.teamName.trim();
+
+    const willPersistToMemory =
+      feedbackChoice === false || feedbackCorrection.trim().length > 0;
+
+    if (willPersistToMemory && !teamName) {
+      setFeedbackSuccess(false);
+      setFeedbackMessage("Set a team name in the form (or sign in so your team is saved).");
+      return;
+    }
+
+    if (feedbackChoice === false && !feedbackCorrection.trim()) {
+      setFeedbackSuccess(false);
+      setFeedbackMessage("Add a short correction so the agent knows what to fix.");
       return;
     }
 
     setIsSubmittingFeedback(true);
     setFeedbackMessage("");
+    setFeedbackSuccess(false);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/feedback`, {
+      const response = await fetch(FEEDBACK_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
+          teamName,
+          language: formData.language,
+          originalIssue:
+            originalIssueSummary.trim() || "Review output (see full markdown in UI).",
+          correction: feedbackCorrection.trim(),
           reviewId,
-          wasHelpful: feedbackChoice,
-          corrections: feedbackCorrection,
-          teamName: formData.teamName.trim()
+          wasHelpful: feedbackChoice
         })
       });
 
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload?.error || "Feedback request failed.");
+      let payload = {};
+      try {
+        payload = await response.json();
+      } catch {
+        payload = {};
       }
 
-      setFeedbackMessage("Feedback submitted. The agent will learn from this.");
-      setFeedbackCorrection("");
+      if (!response.ok) {
+        throw new Error(
+          payload?.error || payload?.details || "Feedback request failed."
+        );
+      }
+
+      if (payload.savedToMemory) {
+        setFeedbackSuccess(true);
+        setFeedbackMessage("");
+        setFeedbackCorrection("");
+        setRequestError("");
+      } else {
+        setFeedbackSuccess(false);
+        setFeedbackMessage(
+          payload.message || "Thanks for letting us know."
+        );
+      }
     } catch (error) {
+      setFeedbackSuccess(false);
       setFeedbackMessage(error.message);
     } finally {
       setIsSubmittingFeedback(false);
@@ -292,34 +385,25 @@ export default function DashboardPage() {
                   AI review
                 </h2>
                 <span className="rounded-full bg-emerald-500/15 px-3 py-1 font-label text-xs text-emerald-700 dark:bg-primary-container/15 dark:text-primary-container">
-                  Score {parsedSections.overallScore}/10
+                  Score {reviewStructured.score}
                 </span>
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="rounded-lg bg-zinc-100/90 p-3 dark:bg-surface-container-low/80">
-                  <div className="font-label text-[10px] uppercase text-zinc-600 dark:text-on-surface-variant">
-                    Issues
-                  </div>
-                  <p className="mt-1 text-xs leading-relaxed text-zinc-800 dark:text-on-surface">
-                    {parsedSections.issues || "—"}
-                  </p>
-                </div>
-                <div className="rounded-lg bg-zinc-100/90 p-3 dark:bg-surface-container-low/80">
-                  <div className="font-label text-[10px] uppercase text-zinc-600 dark:text-on-surface-variant">
-                    Suggestions
-                  </div>
-                  <p className="mt-1 text-xs leading-relaxed text-zinc-800 dark:text-on-surface">
-                    {parsedSections.suggestions || "—"}
-                  </p>
-                </div>
-                <div className="rounded-lg bg-zinc-100/90 p-3 dark:bg-surface-container-low/80">
-                  <div className="font-label text-[10px] uppercase text-zinc-600 dark:text-on-surface-variant">
-                    Team notes
-                  </div>
-                  <p className="mt-1 text-xs leading-relaxed text-zinc-800 dark:text-on-surface">
-                    {parsedSections.standards || "—"}
-                  </p>
-                </div>
+                <ReviewListCard
+                  title="Issues"
+                  items={reviewStructured.issues}
+                  emptyLabel="No issues found."
+                />
+                <ReviewListCard
+                  title="Suggestions"
+                  items={reviewStructured.suggestions}
+                  emptyLabel="No suggestions found."
+                />
+                <ReviewListCard
+                  title="Team notes"
+                  items={reviewStructured.teamNotes}
+                  emptyLabel="No team notes found."
+                />
               </div>
               <div className="mt-4 max-h-[280px] overflow-auto rounded-lg border border-zinc-200/80 bg-white p-4 text-sm dark:border-transparent dark:bg-surface-container-lowest/90">
                 {reviewMarkdown ? (
@@ -425,6 +509,28 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
+
+        {feedbackSuccess && (
+          <div
+            className="mt-6 rounded-xl border border-emerald-500/50 bg-emerald-500/10 px-4 py-3 font-body text-sm text-emerald-900 dark:border-primary-container/40 dark:bg-primary-container/15 dark:text-on-surface"
+            role="status"
+          >
+            <p className="font-headline font-bold text-emerald-800 dark:text-primary-container">
+              Correction saved
+            </p>
+            <p className="mt-1 text-emerald-900/90 dark:text-on-surface">
+              Your correction was stored in team memory. The agent will use it in future reviews
+              for{" "}
+              <span className="font-medium">
+                {(typeof localStorage !== "undefined" &&
+                  localStorage.getItem(TEAM_NAME_STORAGE_KEY)?.trim()) ||
+                  formData.teamName.trim() ||
+                  "your team"}
+              </span>
+              .
+            </p>
+          </div>
+        )}
 
         {(requestError || feedbackMessage) && (
           <div

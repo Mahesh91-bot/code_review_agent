@@ -97,8 +97,12 @@ async function getTeamMemories(teamName) {
   return result;
 }
 
+/** Alias for callers that expect `saveMemory`; same as `storeMemory`. */
+const saveMemory = storeMemory;
+
 module.exports = {
   storeMemory,
+  saveMemory,
   searchMemories,
   getTeamMemories
 };

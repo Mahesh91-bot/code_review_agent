@@ -2,6 +2,7 @@ const express = require("express");
 const { randomUUID } = require("crypto");
 const {
   storeMemory,
+  saveMemory,
   searchMemories,
   getTeamMemories
 } = require("../services/hindsight");
@@ -9,8 +10,20 @@ const { reviewCodeWithGroq } = require("../services/llm");
 
 const router = express.Router();
 
-function inferSeverityFromReview(reviewText) {
-  const lowered = (reviewText || "").toLowerCase();
+function reviewObjectToPlainText(review) {
+  if (!review || typeof review !== "object") {
+    return String(review || "");
+  }
+  const parts = [
+    ...(Array.isArray(review.issues) ? review.issues : []),
+    ...(Array.isArray(review.suggestions) ? review.suggestions : []),
+    ...(Array.isArray(review.teamNotes) ? review.teamNotes : [])
+  ];
+  return parts.join("\n");
+}
+
+function inferSeverityFromReview(review) {
+  const lowered = reviewObjectToPlainText(review).toLowerCase();
   if (
     lowered.includes("critical") ||
     lowered.includes("security") ||
@@ -25,8 +38,13 @@ function inferSeverityFromReview(reviewText) {
   return "low";
 }
 
-function inferPatternFromReview(reviewText) {
-  const firstLine = (reviewText || "")
+function inferPatternFromReview(review) {
+  if (review && typeof review === "object" && Array.isArray(review.issues)) {
+    const first = review.issues.find((line) => String(line).trim().length > 0);
+    if (first) return String(first).trim();
+  }
+  const text = reviewObjectToPlainText(review);
+  const firstLine = text
     .split("\n")
     .map((line) => line.trim())
     .find((line) => line.length > 0);
@@ -71,8 +89,19 @@ router.post("/review", async (req, res) => {
     });
 
     const reviewId = randomUUID();
-    const severity = inferSeverityFromReview(reviewResult.review);
-    const pattern = inferPatternFromReview(reviewResult.review);
+    const review = reviewResult.review;
+    const severity = inferSeverityFromReview(review);
+    const pattern = inferPatternFromReview(review);
+
+    const memorySummaryLines = [
+      ...(Array.isArray(review.issues) ? review.issues.map((i) => `Issue: ${i}`) : []),
+      ...(Array.isArray(review.suggestions)
+        ? review.suggestions.map((s) => `Suggestion: ${s}`)
+        : []),
+      ...(Array.isArray(review.teamNotes)
+        ? review.teamNotes.map((n) => `Team note: ${n}`)
+        : [])
+    ];
 
     // 3) Save this review back into memory so future reviews improve.
     await storeMemory({
@@ -82,7 +111,10 @@ router.post("/review", async (req, res) => {
         `Team ${teamName} recurring issue in ${filename} (${language}).`,
         `Pattern: ${pattern}`,
         `Severity: ${severity}`,
-        "Summary of reviewer findings recorded for future team-specific recall."
+        `Score: ${review.score || "N/A"}`,
+        memorySummaryLines.length > 0
+          ? memorySummaryLines.join("\n")
+          : "Summary of reviewer findings recorded for future team-specific recall."
       ].join("\n"),
       metadata: {
         type: "code_issue",
@@ -99,7 +131,12 @@ router.post("/review", async (req, res) => {
     return res.status(200).json({
       reviewId,
       teamName,
-      review: reviewResult.review,
+      review: {
+        issues: review.issues || [],
+        suggestions: review.suggestions || [],
+        teamNotes: review.teamNotes || [],
+        score: review.score != null ? String(review.score) : "N/A"
+      },
       memoriesUsed: memories?.results?.length || memories?.data?.length || 0
     });
   } catch (error) {
@@ -113,44 +150,76 @@ router.post("/review", async (req, res) => {
 
 /**
  * POST /api/feedback
- * Saves user feedback so the agent gets better over time.
+ * Saves user corrections to Hindsight (and optional thumbs-up ack without a memory write).
+ * Body: teamName, language, originalIssue, correction (required for corrections),
+ *       optional reviewId, wasHelpful for UI flows.
  */
 router.post("/feedback", async (req, res) => {
   try {
-    const { reviewId, wasHelpful, corrections, teamName } = req.body;
+    const {
+      teamName,
+      language,
+      originalIssue,
+      correction,
+      reviewId,
+      wasHelpful
+    } = req.body;
 
-    if (!reviewId || typeof wasHelpful !== "boolean") {
+    const correctionText =
+      correction !== undefined && correction !== null
+        ? String(correction).trim()
+        : "";
+
+    const hasCorrection = correctionText.length > 0;
+
+    if (!hasCorrection) {
+      if (wasHelpful === true) {
+        return res.status(200).json({
+          message: "Thanks — glad this review was helpful.",
+          savedToMemory: false
+        });
+      }
+      if (wasHelpful === false) {
+        return res.status(400).json({
+          error:
+            "When the review needs work, please add a correction explaining what the agent should learn."
+        });
+      }
       return res.status(400).json({
-        error: "Missing required fields. Expected: reviewId, wasHelpful (boolean)."
+        error:
+          "Send wasHelpful (boolean) or a non-empty correction. For thumbs down, include correction text."
       });
     }
 
-    await storeMemory({
-      // teamName is optional here because the requested payload does not require it.
-      // If missing, we still store the feedback under a shared bucket.
-      teamName: teamName || "unknown-team",
-      memoryType: !wasHelpful || corrections ? "correction" : "feedback",
-      content: [
-        `Feedback for Review ID: ${reviewId}`,
-        `Helpful: ${wasHelpful}`,
-        `Corrections: ${corrections || "No corrections provided"}`
-      ].join("\n"),
-      metadata: {
-        type: !wasHelpful || corrections ? "correction" : "feedback",
-        teamName: teamName || "unknown-team",
-        pattern: corrections || "General feedback on review quality.",
-        severity: !wasHelpful ? "high" : "low",
-        timestamp: new Date().toISOString(),
-        reviewId,
-        wasHelpful
-      }
+    const resolvedTeam = (teamName && String(teamName).trim()) || "unknown-team";
+    const resolvedLanguage = (language && String(language).trim()) || "Unknown";
+    const resolvedIssue =
+      (originalIssue && String(originalIssue).trim()) ||
+      "Original issue context not provided.";
+
+    const timestamp = new Date().toISOString();
+    const memoryContent = `Correction: ${correctionText}. Original context: ${resolvedIssue}`;
+    const memoryMetadata = {
+      type: "correction",
+      teamName: resolvedTeam,
+      language: resolvedLanguage,
+      timestamp
+    };
+
+    await saveMemory({
+      teamName: resolvedTeam,
+      memoryType: "correction",
+      content: memoryContent,
+      metadata: memoryMetadata
     });
 
     return res.status(200).json({
-      message: "Feedback saved successfully."
+      message: "Correction saved. The agent will learn from this.",
+      savedToMemory: true,
+      reviewId: reviewId || undefined
     });
   } catch (error) {
-    console.error("🚨 BACKEND ERROR:", error);
+    console.error("🚨 FEEDBACK ERROR:", error);
     return res.status(500).json({
       error: "Failed to save feedback.",
       details: error.message
