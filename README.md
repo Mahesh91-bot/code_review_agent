@@ -40,7 +40,7 @@ This creates a compounding loop where the reviewer gets sharper with each cycle.
 
 - **Live Website:** [Live Demo Here](https://sageai-zeta.vercel.app/)
 - 🎥 **YouTube Demo:** [Video Demo Here](https://www.youtube.com/watch?v=VoJzTkmj8QM)
-- 🗺️ **Architecture Diagram:** `frontend/stitch/WhatsApp Image 2026-04-19 at 07.23.35.jpeg` *(add your final diagram here)*
+- 🗺️ **Architecture Diagram:** `frontend/stitch/WhatsApp Image 2026-04-19 at 07.23.35.jpeg` 
 
 ```text
 Frontend (React) -> Backend (Express) -> Groq (Review JSON)
