@@ -64,9 +64,9 @@ Frontend (React) -> Backend (Express) -> Groq (Review JSON)
 
 ## Related Articles
 
-- [How I built a stateful code reviewer with Hindsight]
-- [What I learned integrating Hindsight into a code pipeline](./docs/articles/hindsight-integration-lessons.md)
-- [Why stateless code reviewers fail without Hindsight](./docs/articles/why-stateless-code-reviewers-fail.md)
+- [How I built a stateful code reviewer with Hindsight]((https://medium.com/@kuldeepcreddy/i-gave-my-code-reviewer-long-term-memory-with-hindsight-3bac42f8a1db))
+- [What I learned integrating Hindsight into a code pipeline](https://medium.com/@arunchalla8051/from-stateless-bots-to-intelligent-pipelines-building-a-self-learning-ai-code-reviewer-cdea26e7ce88)
+- [Why stateless code reviewers fail without Hindsight](https://medium.com/@abhinavgajavelli/challenge-1-multi-team-memory-boundaries-effd54c00e9d)
 - [I gave my code reviewer long-term memory with Hindsight](https://medium.com/@kuldeepcreddy/i-gave-my-code-reviewer-long-term-memory-with-hindsight-3bac42f8a1db).
 
 
