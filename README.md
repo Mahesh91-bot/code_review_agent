@@ -38,7 +38,8 @@ This creates a compounding loop where the reviewer gets sharper with each cycle.
 
 ## Demo & Media
 
-- 🎥 **YouTube Demo:** [Live Demo Here](https://www.youtube.com/watch?v=VoJzTkmj8QM)
+- **Live Website:** [Live Demo Here](https://sageai-zeta.vercel.app/)
+- 🎥 **YouTube Demo:** [Video Demo Here](https://www.youtube.com/watch?v=VoJzTkmj8QM)
 - 🗺️ **Architecture Diagram:** `docs/architecture/sage-architecture.png` *(add your final diagram here)*
 
 ```text
