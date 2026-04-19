@@ -123,7 +123,7 @@ For full setup details, see [`SETUP.md`](./SETUP.md).
 Thanks to everyone building SAGE. 🚀
 
 - C. Kuldeep Reddy
-- [@TEAMMATE_HANDLE](https://github.com/TEAMMATE_HANDLE)
+- Abhinav Gajavelli
 - [@ANOTHER_CONTRIBUTOR](https://github.com/ANOTHER_CONTRIBUTOR)
 
 Want to contribute? Read [`CONTRIBUTING.md`](./CONTRIBUTING.md).
