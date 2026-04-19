@@ -124,7 +124,7 @@ Thanks to everyone building SAGE. 🚀
 
 - C. Kuldeep Reddy
 - Abhinav Gajavelli
-- [@ANOTHER_CONTRIBUTOR](https://github.com/ANOTHER_CONTRIBUTOR)
+- Ch. Arun Sai
 
 Want to contribute? Read [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
