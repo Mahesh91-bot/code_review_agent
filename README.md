@@ -64,11 +64,11 @@ Frontend (React) -> Backend (Express) -> Groq (Review JSON)
 
 ## Related Articles
 
-- [How I built a stateful code reviewer with Hindsight](./docs/articles/how-i-built-a-stateful-code-reviewer-with-hindsight.md)
+- [How I built a stateful code reviewer with Hindsight]
 - [What I learned integrating Hindsight into a code pipeline](./docs/articles/hindsight-integration-lessons.md)
 - [Why stateless code reviewers fail without Hindsight](./docs/articles/why-stateless-code-reviewers-fail.md)
+- [I gave my code reviewer long-term memory with Hindsight](https://medium.com/@kuldeepcreddy/i-gave-my-code-reviewer-long-term-memory-with-hindsight-3bac42f8a1db).
 
-> Replace these with your published blog URLs when live.
 
 ---
 
