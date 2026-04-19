@@ -122,7 +122,7 @@ For full setup details, see [`SETUP.md`](./SETUP.md).
 
 Thanks to everyone building SAGE. 🚀
 
-- [@YOUR_GITHUB_HANDLE](https://github.com/YOUR_GITHUB_HANDLE)
+- C. Kuldeep Reddy
 - [@TEAMMATE_HANDLE](https://github.com/TEAMMATE_HANDLE)
 - [@ANOTHER_CONTRIBUTOR](https://github.com/ANOTHER_CONTRIBUTOR)
 
