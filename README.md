@@ -123,7 +123,7 @@ For full setup details, see [`SETUP.md`](./SETUP.md).
 Thanks to everyone building SAGE. 🚀
 
 - C. Kuldeep Reddy
-- Abhinav Gajavelli
+  
 - Ch. Arun Sai
 - Mahesh Bommagani
 
